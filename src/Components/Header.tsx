@@ -1,8 +1,11 @@
 import { useState } from "react";
+import Overlay from "./Overlay";
+import Cart from "./Cart";
 
 const Header = () => {
   const [activeTab, setActiveTab] = useState("ALL");
   const [isOverlayOpen, setIsOverlayOpen] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
   const tabs = ["ALL", "CLOTHES", "TECH"];
 
   return (
@@ -26,25 +29,31 @@ const Header = () => {
         })}
       </div>
 
-      <img src="/brandIcon.svg" alt="Brand Icon" />
-
       <img
-        src="/cartIcon.svg"
-        alt="Cart Icon"
-        className="cursor-pointer"
-        onClick={(e) => {
-          e.stopPropagation();
-          setIsOverlayOpen(!isOverlayOpen);
-        }}
+        src="/brandIcon.svg"
+        alt="Brand Icon"
+        className="absolute left-1/2"
       />
 
-      {isOverlayOpen && (
-        <div
-          className="bg-overlay absolute left-0 top-20 z-20 flex h-screen w-full items-center justify-center"
-          onClick={() => {
-            setIsOverlayOpen(false);
+      <div className="relative">
+        <img
+          src="/cartIcon.svg"
+          alt="Cart Icon"
+          className="cursor-pointer"
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsOverlayOpen(!isOverlayOpen);
           }}
-        ></div>
+        />
+
+        {isCartOpen && <Cart setIsCartOpen={setIsCartOpen} />}
+      </div>
+
+      {isOverlayOpen && (
+        <Overlay
+          setIsOverlayOpen={setIsOverlayOpen}
+          setIsCartOpen={setIsCartOpen}
+        />
       )}
     </header>
   );
