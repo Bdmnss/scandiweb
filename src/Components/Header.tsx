@@ -1,12 +1,19 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import Overlay from "./Overlay";
 import Cart from "./Cart";
 
 const Header = () => {
+  const location = useLocation();
   const [activeTab, setActiveTab] = useState("ALL");
   const [isOverlayOpen, setIsOverlayOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const tabs = ["ALL", "CLOTHES", "TECH"];
+
+  useEffect(() => {
+    const path = location.pathname.slice(1).toUpperCase();
+    setActiveTab(path === "" ? "ALL" : path);
+  }, [location]);
 
   return (
     <header
@@ -18,13 +25,17 @@ const Header = () => {
       <div className="flex gap-6">
         {tabs.map((tab) => {
           return (
-            <div
-              key={tab}
-              className={`relative cursor-pointer px-4 transition-colors duration-200 ${activeTab === tab && "text-primary border-primary border-b-2 pb-6"}`}
+            <Link
+              key={tab.toUpperCase()}
+              to={tab === "ALL" ? "/" : `/${tab.toLowerCase()}`}
+              className={`relative cursor-pointer px-4 transition-colors duration-200 ${
+                activeTab === tab &&
+                "text-primary border-primary border-b-2 pb-6"
+              }`}
               onClick={() => setActiveTab(tab)}
             >
               {tab}
-            </div>
+            </Link>
           );
         })}
       </div>
@@ -42,6 +53,7 @@ const Header = () => {
           className="cursor-pointer"
           onClick={(e) => {
             e.stopPropagation();
+            setIsCartOpen(!isCartOpen);
             setIsOverlayOpen(!isOverlayOpen);
           }}
         />
