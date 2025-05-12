@@ -28,9 +28,10 @@ const Header = () => {
             <Link
               key={tab.toUpperCase()}
               to={tab === "ALL" ? "/" : `/${tab.toLowerCase()}`}
-              className={`relative cursor-pointer px-4 transition-colors duration-200 ${
-                activeTab === tab &&
-                "text-primary border-primary border-b-2 pb-6"
+              className={`relative cursor-pointer border-b-2 px-4 pb-6 transition-all duration-200 ${
+                activeTab === tab
+                  ? "text-primary border-primary"
+                  : "border-transparent"
               }`}
               onClick={() => setActiveTab(tab)}
             >
