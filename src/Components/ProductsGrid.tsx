@@ -1,6 +1,9 @@
+import { useNavigate } from "react-router-dom";
 import data from "../../data.json";
 
 const ProductsGrid = () => {
+  const navigate = useNavigate();
+
   return (
     <div>
       <h1 className="mb-28 text-5xl">ALL</h1>
@@ -9,6 +12,7 @@ const ProductsGrid = () => {
           <div
             key={product.id}
             className="hover:shadow-custom group relative cursor-pointer bg-white p-4 transition-transform duration-300 hover:scale-[1.03]"
+            onClick={() => navigate(`/products/${product.id}`)}
           >
             <div className="relative mb-6 h-96 w-full">
               <img

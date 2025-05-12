@@ -13,6 +13,7 @@ export default {
       },
       backgroundColor: {
         overlay: "rgba(57, 55, 72, 0.22)",
+        arrowBackground: "rgba(0, 0, 0, 0.73)",
       },
       boxShadow: {
         custom: "0px 4px 15px rgba(168, 172, 176, 0.45)",

@@ -1,8 +1,25 @@
+import { useParams } from "react-router-dom";
+import data from "../../data.json";
+import ProductGallery from "../Components/ProductGallery";
+import ProductDetails from "../Components/ProductDetails";
+import { useEffect } from "react";
+
 const Product = () => {
+  const { id } = useParams();
+  const product = data.data.products.find((product) => product.id === id);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  if (!product) {
+    return <p>Product not found</p>;
+  }
+
   return (
-    <div>
-      <h1>Product Details</h1>
-      <p>This is where the product details will be displayed.</p>
+    <div className="flex gap-28">
+      <ProductGallery product={product} />
+      <ProductDetails product={product} />
     </div>
   );
 };
