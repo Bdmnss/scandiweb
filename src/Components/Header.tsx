@@ -44,14 +44,14 @@ const Header = () => {
       <img
         src="/brandIcon.svg"
         alt="Brand Icon"
-        className="absolute left-1/2"
+        className="absolute left-1/2 pb-6"
       />
 
       <div className="relative">
         <img
           src="/cartIcon.svg"
           alt="Cart Icon"
-          className="cursor-pointer"
+          className="cursor-pointer pb-6"
           onClick={(e) => {
             e.stopPropagation();
             setIsCartOpen(!isCartOpen);
