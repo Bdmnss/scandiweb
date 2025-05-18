@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import ProductsGrid from "../Components/ProductsGrid";
 import Loader from "../Components/Loader";
+import CustomError from "../Components/CustomError";
 
 const fetchTech = async () => {
   const response = await fetch("http://localhost/scandiweb/getTech.php");
@@ -21,7 +22,7 @@ const Tech = () => {
   }
 
   if (isError) {
-    return <div>Error: {(error as Error).message}</div>;
+    return <CustomError message={(error as Error).message} />;
   }
 
   return <ProductsGrid data={data} name="TECH" />;

@@ -4,6 +4,7 @@ import ProductDetails from "../Components/ProductDetails";
 import { useQuery } from "@tanstack/react-query";
 import Loader from "../Components/Loader";
 import { useEffect } from "react";
+import CustomError from "../Components/CustomError";
 
 const fetchProduct = async (id: string) => {
   const response = await fetch(
@@ -42,7 +43,7 @@ const Product = () => {
   }
 
   if (isError) {
-    return <p>{(error as Error).message}</p>;
+    return <CustomError message={(error as Error).message} />;
   }
 
   return (
