@@ -1,27 +1,50 @@
-// import { useParams } from "react-router-dom";
-// import data from "../../data.json";
-// import ProductGallery from "../Components/ProductGallery";
-// import ProductDetails from "../Components/ProductDetails";
-// import { useEffect } from "react";
+import { useParams } from "react-router-dom";
+import ProductGallery from "../Components/ProductGallery";
+import ProductDetails from "../Components/ProductDetails";
+import { useQuery } from "@tanstack/react-query";
 
-// const Product = () => {
-//   const { id } = useParams();
-//   const product = data.data.products.find((product) => product.id === id);
+const fetchProduct = async (id: string) => {
+  const response = await fetch(
+    `http://localhost/scandiweb/getProduct.php?id=${id}`,
+  );
+  if (!response.ok) {
+    throw new Error("Failed to fetch product");
+  }
+  const data = await response.json();
+  if (data.error) {
+    throw new Error(data.error);
+  }
+  return data;
+};
 
-//   useEffect(() => {
-//     window.scrollTo(0, 0);
-//   }, []);
+const Product = () => {
+  const { id } = useParams<{ id: string }>();
 
-//   if (!product) {
-//     return <p>Product not found</p>;
-//   }
+  const {
+    data: product,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["product", id],
+    queryFn: () => fetchProduct(id!),
+    enabled: !!id,
+  });
 
-//   return (
-//     <div className="flex gap-28">
-//       <ProductGallery product={product} />
-//       <ProductDetails product={product} />
-//     </div>
-//   );
-// };
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
 
-// export default Product;
+  if (isError) {
+    return <p>{(error as Error).message}</p>;
+  }
+
+  return (
+    <div className="flex gap-28">
+      <ProductGallery product={product} />
+      <ProductDetails product={product} />
+    </div>
+  );
+};
+
+export default Product;

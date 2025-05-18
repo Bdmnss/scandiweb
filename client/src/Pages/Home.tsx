@@ -23,7 +23,7 @@ const Home = () => {
     return <div>Error: {(error as Error).message}</div>;
   }
 
-  return <ProductsGrid data={data} />;
+  return <ProductsGrid data={data} name="ALL" />;
 };
 
 export default Home;

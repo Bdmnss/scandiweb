@@ -23,9 +23,7 @@ const Clothes = () => {
     return <div>Error: {(error as Error).message}</div>;
   }
 
-  console.log(data);
-
-  return <ProductsGrid data={data} />;
+  return <ProductsGrid data={data} name="CLOTHES" />;
 };
 
 export default Clothes;
