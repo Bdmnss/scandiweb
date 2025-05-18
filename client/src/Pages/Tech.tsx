@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import ProductsGrid from "../Components/ProductsGrid";
+import Loader from "../Components/Loader";
 
 const fetchTech = async () => {
   const response = await fetch("http://localhost/scandiweb/getTech.php");
@@ -16,7 +17,7 @@ const Tech = () => {
   });
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <Loader />;
   }
 
   if (isError) {

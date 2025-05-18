@@ -2,6 +2,8 @@ import { useParams } from "react-router-dom";
 import ProductGallery from "../Components/ProductGallery";
 import ProductDetails from "../Components/ProductDetails";
 import { useQuery } from "@tanstack/react-query";
+import Loader from "../Components/Loader";
+import { useEffect } from "react";
 
 const fetchProduct = async (id: string) => {
   const response = await fetch(
@@ -31,8 +33,12 @@ const Product = () => {
     enabled: !!id,
   });
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   if (isLoading) {
-    return <p>Loading...</p>;
+    return <Loader />;
   }
 
   if (isError) {
