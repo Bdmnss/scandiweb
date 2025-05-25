@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Overlay from "./Overlay";
 import Cart from "./Cart";
+import { useCategories } from "../lib/graphql/hooks";
 
 const Header = () => {
   const location = useLocation();
@@ -9,6 +10,11 @@ const Header = () => {
   const [isOverlayOpen, setIsOverlayOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const tabs = ["ALL", "CLOTHES", "TECH"];
+  const { data, loading, error } = useCategories();
+
+  console.log(data);
+  console.log(loading);
+  console.log(error);
 
   useEffect(() => {
     const path = location.pathname.slice(1).toUpperCase();
@@ -30,7 +36,7 @@ const Header = () => {
               to={tab === "ALL" ? "/" : `/${tab.toLowerCase()}`}
               className={`relative cursor-pointer border-b-2 px-4 pb-6 transition-all duration-200 ${
                 activeTab === tab
-                  ? "text-primary border-primary"
+                  ? "border-primary text-primary"
                   : "border-transparent"
               }`}
               onClick={() => setActiveTab(tab)}
