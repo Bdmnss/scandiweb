@@ -1,4 +1,5 @@
 import React from "react";
+import parse from "html-react-parser";
 
 interface ProductDetailsProps {
   product: {
@@ -34,10 +35,10 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
                 <button
                   className={`h-11 w-16 duration-300 ${
                     attribute.type === "text" &&
-                    "border-textPrimary hover:bg-textPrimary border transition-colors hover:text-white"
+                    "border border-textPrimary transition-colors hover:bg-textPrimary hover:text-white"
                   } ${
                     attribute.type === "swatch" &&
-                    "hover:border-primary hover:border hover:p-0.5"
+                    "hover:border hover:border-primary hover:p-0.5"
                   }`}
                 >
                   {attribute.type === "swatch" && (
@@ -68,12 +69,12 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
 
       <button
         disabled={!product.inStock}
-        className="bg-primary h-14 w-full font-semibold text-white disabled:opacity-50"
+        className="h-14 w-full bg-primary font-semibold text-white disabled:opacity-50"
       >
         ADD TO CART
       </button>
 
-      <div dangerouslySetInnerHTML={{ __html: product.description }}></div>
+      <div>{parse(product.description)} </div>
     </div>
   );
 };
