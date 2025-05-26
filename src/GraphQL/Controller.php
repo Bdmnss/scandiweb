@@ -4,7 +4,9 @@ namespace App\GraphQL;
 
 use App\GraphQL\Resolvers\CategoriesResolver;
 use App\GraphQL\Types\CategoryType;
+use App\GraphQL\Types\ImageType;
 use App\GraphQL\Types\PriceType;
+use App\Models\Image;
 use App\Models\Price;
 use GraphQL\GraphQL as GraphQLBase;
 use GraphQL\Type\Definition\ObjectType;
@@ -36,6 +38,18 @@ class Controller
                                 return [];
                             }
                             return Price::getPricesByProductId($args['productId']);
+                        },
+                    ],
+                    'images' => [
+                        'type' => Type::listOf(new ImageType()),
+                        'args' => [
+                            'productId' => ['type' => Type::string()],
+                        ],
+                        'resolve' => static function ($root, $args) {
+                            if (!isset($args['productId'])) {
+                                return [];
+                            }
+                            return Image::getImagesByProductId($args['productId']);
                         },
                     ],
                 ],

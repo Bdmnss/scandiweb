@@ -19,3 +19,11 @@ export const GetPricesByProductId = gql`
     }
   }
 `;
+
+export const GetImagesByProductId = gql`
+  query Images($productId: String!) {
+    images(productId: $productId) {
+      url
+    }
+  }
+`;
