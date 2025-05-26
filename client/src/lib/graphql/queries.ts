@@ -27,3 +27,18 @@ export const GetImagesByProductId = gql`
     }
   }
 `;
+
+export const GetAttributesByProductId = gql`
+  query Attributes($productId: String!) {
+    attributes(productId: $productId) {
+      id
+      name
+      type
+      items {
+        id
+        displayValue
+        value
+      }
+    }
+  }
+`;
