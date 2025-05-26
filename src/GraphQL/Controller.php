@@ -4,6 +4,8 @@ namespace App\GraphQL;
 
 use App\GraphQL\Resolvers\CategoriesResolver;
 use App\GraphQL\Types\CategoryType;
+use App\GraphQL\Types\PriceType;
+use App\Models\Price;
 use GraphQL\GraphQL as GraphQLBase;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
@@ -24,7 +26,18 @@ class Controller
                         'type' => Type::listOf(new CategoryType()),
                         'resolve' => static fn(): array => CategoriesResolver::resolve(),
                     ],
-
+                    'prices' => [
+                        'type' => Type::listOf(new PriceType()),
+                        'args' => [
+                            'productId' => ['type' => Type::string()],
+                        ],
+                        'resolve' => static function ($root, $args) {
+                            if (!isset($args['productId'])) {
+                                return [];
+                            }
+                            return Price::getPricesByProductId($args['productId']);
+                        },
+                    ],
                 ],
             ]);
 

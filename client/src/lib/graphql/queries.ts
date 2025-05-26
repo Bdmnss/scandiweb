@@ -7,3 +7,15 @@ export const GetAllCategories = gql`
     }
   }
 `;
+
+export const GetPricesByProductId = gql`
+  query Prices($productId: String!) {
+    prices(productId: $productId) {
+      amount
+      currency {
+        label
+        symbol
+      }
+    }
+  }
+`;
