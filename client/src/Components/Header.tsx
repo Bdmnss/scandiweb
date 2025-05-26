@@ -9,12 +9,7 @@ const Header = () => {
   const [activeTab, setActiveTab] = useState("ALL");
   const [isOverlayOpen, setIsOverlayOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const tabs = ["ALL", "CLOTHES", "TECH"];
-  const { data, loading, error } = useCategories();
-
-  console.log(data);
-  console.log(loading);
-  console.log(error);
+  const { data } = useCategories();
 
   useEffect(() => {
     const path = location.pathname.slice(1).toUpperCase();
@@ -29,22 +24,25 @@ const Header = () => {
       }}
     >
       <div className="flex gap-6">
-        {tabs.map((tab) => {
-          return (
-            <Link
-              key={tab.toUpperCase()}
-              to={tab === "ALL" ? "/" : `/${tab.toLowerCase()}`}
-              className={`relative cursor-pointer border-b-2 px-4 pb-6 transition-all duration-200 ${
-                activeTab === tab
-                  ? "border-primary text-primary"
-                  : "border-transparent"
-              }`}
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab}
-            </Link>
-          );
-        })}
+        {data &&
+          data.categories &&
+          data.categories.map((category: { name: string }) => {
+            const tab = category.name.toUpperCase();
+            return (
+              <Link
+                key={tab}
+                to={tab === "ALL" ? "/" : `/${category.name.toLowerCase()}`}
+                className={`relative cursor-pointer border-b-2 px-4 pb-6 transition-all duration-200 ${
+                  activeTab === tab
+                    ? "border-primary text-primary"
+                    : "border-transparent"
+                }`}
+                onClick={() => setActiveTab(tab)}
+              >
+                {tab}
+              </Link>
+            );
+          })}
       </div>
 
       <img
