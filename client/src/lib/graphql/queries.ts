@@ -8,36 +8,34 @@ export const GetAllCategories = gql`
   }
 `;
 
-export const GetPricesByProductId = gql`
-  query Prices($productId: String!) {
-    prices(productId: $productId) {
-      amount
-      currency {
-        label
-        symbol
-      }
-    }
-  }
-`;
-
-export const GetImagesByProductId = gql`
-  query Images($productId: String!) {
-    images(productId: $productId) {
-      url
-    }
-  }
-`;
-
-export const GetAttributesByProductId = gql`
-  query Attributes($productId: String!) {
-    attributes(productId: $productId) {
+export const GetAllProducts = gql`
+  query Products($category: String) {
+    products(category: $category) {
       id
       name
-      type
-      items {
+      inStock
+      description
+      category
+      brand
+      images {
+        url
+      }
+      prices {
+        amount
+        currency {
+          label
+          symbol
+        }
+      }
+      attributes {
         id
-        displayValue
-        value
+        name
+        type
+        items {
+          id
+          displayValue
+          value
+        }
       }
     }
   }

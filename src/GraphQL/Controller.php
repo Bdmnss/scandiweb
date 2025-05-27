@@ -3,13 +3,8 @@
 namespace App\GraphQL;
 
 use App\GraphQL\Resolvers\CategoriesResolver;
-use App\GraphQL\Types\AttributeType;
 use App\GraphQL\Types\CategoryType;
-use App\GraphQL\Types\ImageType;
-use App\GraphQL\Types\PriceType;
-use App\Models\Attribute;
-use App\Models\Image;
-use App\Models\Price;
+use App\GraphQL\Types\ProductType;
 use GraphQL\GraphQL as GraphQLBase;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
@@ -22,6 +17,7 @@ class Controller
 {
     public static function handle()
     {
+        $productType = new ProductType();
         try {
             $queryType = new ObjectType([
                 'name' => 'Query',
@@ -30,41 +26,12 @@ class Controller
                         'type' => Type::listOf(new CategoryType()),
                         'resolve' => static fn(): array => CategoriesResolver::resolve(),
                     ],
-                    'prices' => [
-                        'type' => Type::listOf(new PriceType()),
+                    'products' => [
+                        'type' => Type::listOf($productType),
                         'args' => [
-                            'productId' => ['type' => Type::string()],
+                            'category' => ['type' => Type::string()],
                         ],
-                        'resolve' => static function ($root, $args) {
-                            if (!isset($args['productId'])) {
-                                return [];
-                            }
-                            return Price::getPricesByProductId($args['productId']);
-                        },
-                    ],
-                    'images' => [
-                        'type' => Type::listOf(new ImageType()),
-                        'args' => [
-                            'productId' => ['type' => Type::string()],
-                        ],
-                        'resolve' => static function ($root, $args) {
-                            if (!isset($args['productId'])) {
-                                return [];
-                            }
-                            return Image::getImagesByProductId($args['productId']);
-                        },
-                    ],
-                    'attributes' => [
-                        'type' => Type::listOf(new AttributeType()),
-                        'args' => [
-                            'productId' => ['type' => Type::string()],
-                        ],
-                        'resolve' => static function ($root, $args) {
-                            if (!isset($args['productId'])) {
-                                return [];
-                            }
-                            return Attribute::getAttributesByProductId($args['productId']);
-                        },
+                        'resolve' => static fn($rootValue, array $args) => Resolvers\ProductsResolver::resolve($args['category'] ?? null),
                     ],
                 ],
             ]);
