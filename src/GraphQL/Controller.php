@@ -33,6 +33,13 @@ class Controller
                         ],
                         'resolve' => static fn($rootValue, array $args) => Resolvers\ProductsResolver::resolve($args['category'] ?? null),
                     ],
+                    'product' => [
+                        'type' => $productType,
+                        'args' => [
+                            'id' => ['type' => Type::nonNull(Type::string())],
+                        ],
+                        'resolve' => static fn($rootValue, array $args) => \App\GraphQL\Resolvers\ProductsResolver::single($args['id']),
+                    ],
                 ],
             ]);
 

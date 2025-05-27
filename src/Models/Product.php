@@ -33,6 +33,21 @@ class Product extends Model
         return $products;
     }
 
+    public static function getByIdWithDetails(string $id): ?array
+    {
+        $query = 'SELECT * FROM ' . static::$table . ' WHERE id = :id';
+        $params = ['id' => $id];
+        $results = (new static())->db->query($query, $params)->get();
+        $product = $results[0] ?? null;
+
+        if (!$product) {
+            return null;
+        }
+
+        self::attachRelations($product);
+        return $product;
+    }
+
     private static function attachRelations(array &$product): void
     {
         if (empty($product['id'])) {
