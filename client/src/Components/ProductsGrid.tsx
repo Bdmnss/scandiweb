@@ -5,8 +5,8 @@ interface Product {
   id: string;
   name: string;
   inStock: boolean;
-  gallery: string[];
   prices: { currency: { label: string; symbol: string }; amount: number }[];
+  images: { url: string }[];
 }
 
 interface ProductsGridProps {
@@ -33,9 +33,17 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({ data, name }) => {
           >
             <div className="relative mb-6 h-96 w-full">
               <img
-                src={product.gallery[0]}
+                src={
+                  Array.isArray(product.images) &&
+                  product.images.length > 0 &&
+                  product.images[0].url
+                    ? product.images[0].url
+                    : "/placeholder.jpg"
+                }
                 alt="Main Image"
-                className={`h-[330px] w-full object-cover ${!product.inStock && "opacity-50"}`}
+                className={`h-[330px] w-full object-cover ${
+                  !product.inStock && "opacity-50"
+                }`}
               />
               {!product.inStock && (
                 <div className="absolute inset-0 flex items-center justify-center">
@@ -58,7 +66,9 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({ data, name }) => {
               (price) => (
                 <p
                   key={price.currency.label}
-                  className={`text-lg ${!product.inStock && "text-textSecondary"}`}
+                  className={`text-lg ${
+                    !product.inStock && "text-textSecondary"
+                  }`}
                 >
                   {price.currency.symbol} {price.amount}
                 </p>

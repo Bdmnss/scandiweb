@@ -1,31 +1,20 @@
-import { useQuery } from "@tanstack/react-query";
 import ProductsGrid from "../Components/ProductsGrid";
 import Loader from "../Components/Loader";
 import CustomError from "../Components/CustomError";
-
-const fetchClothes = async () => {
-  const response = await fetch("http://localhost/scandiweb/getClothes.php");
-  if (!response.ok) {
-    throw new Error("Network response was not ok");
-  }
-  return response.json();
-};
+import { useProducts } from "../lib/graphql/hooks";
 
 const Clothes = () => {
-  const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["clothes"],
-    queryFn: fetchClothes,
-  });
+  const { data, loading, error } = useProducts("clothes");
 
-  if (isLoading) {
+  if (loading) {
     return <Loader />;
   }
 
-  if (isError) {
-    return <CustomError message={(error as Error).message} />;
+  if (error) {
+    return <CustomError message={(error as unknown as Error).message} />;
   }
 
-  return <ProductsGrid data={data} name="CLOTHES" />;
+  return <ProductsGrid data={data.products} name="CLOTHES" />;
 };
 
 export default Clothes;
