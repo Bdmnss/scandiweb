@@ -3,13 +3,17 @@ import { Link, useLocation } from "react-router-dom";
 import Overlay from "./Overlay";
 import Cart from "./Cart";
 import { useCategories } from "../lib/graphql/hooks";
+import { useCartStore } from "../store/cartStore";
 
 const Header = () => {
   const location = useLocation();
   const [activeTab, setActiveTab] = useState("ALL");
-  const [isOverlayOpen, setIsOverlayOpen] = useState(false);
-  const [isCartOpen, setIsCartOpen] = useState(false);
   const { data } = useCategories();
+
+  const isCartOpen = useCartStore((state) => state.isCartOpen);
+  const isOverlayOpen = useCartStore((state) => state.isOverlayOpen);
+  const setIsCartOpen = useCartStore((state) => state.setIsCartOpen);
+  const setIsOverlayOpen = useCartStore((state) => state.setIsOverlayOpen);
 
   useEffect(() => {
     const path = location.pathname.slice(1).toUpperCase();
@@ -61,12 +65,7 @@ const Header = () => {
         {isCartOpen && <Cart />}
       </div>
 
-      {isOverlayOpen && (
-        <Overlay
-          setIsOverlayOpen={setIsOverlayOpen}
-          setIsCartOpen={setIsCartOpen}
-        />
-      )}
+      {isOverlayOpen && <Overlay />}
     </header>
   );
 };

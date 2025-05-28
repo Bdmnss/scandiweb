@@ -1,15 +1,12 @@
-type OverlayProps = {
-  setIsOverlayOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  setIsCartOpen: React.Dispatch<React.SetStateAction<boolean>>;
-};
+import { useCartStore } from "../store/cartStore";
 
-const Overlay: React.FC<OverlayProps> = ({
-  setIsOverlayOpen,
-  setIsCartOpen,
-}) => {
+const Overlay: React.FC = () => {
+  const setIsCartOpen = useCartStore((state) => state.setIsCartOpen);
+  const setIsOverlayOpen = useCartStore((state) => state.setIsOverlayOpen);
+
   return (
     <div
-      className="bg-overlay absolute left-0 top-20 z-20 flex h-screen w-full items-center justify-center"
+      className="absolute left-0 top-20 z-20 flex h-screen w-full items-center justify-center bg-overlay"
       onClick={() => {
         setIsOverlayOpen(false);
         setIsCartOpen(false);
