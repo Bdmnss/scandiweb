@@ -10,6 +10,7 @@ export default {
       },
       fontFamily: {
         sans: ["Raleway", "sans-serif"],
+        roboto: ["Roboto", "sans-serif"],
       },
       backgroundColor: {
         overlay: "rgba(57, 55, 72, 0.22)",

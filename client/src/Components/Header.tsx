@@ -15,6 +15,10 @@ const Header = () => {
   const setIsCartOpen = useCartStore((state) => state.setIsCartOpen);
   const setIsOverlayOpen = useCartStore((state) => state.setIsOverlayOpen);
 
+  const cartQuantity = useCartStore((state) =>
+    state.items.reduce((acc, item) => acc + item.quantity, 0),
+  );
+
   useEffect(() => {
     const path = location.pathname.slice(1).toUpperCase();
     setActiveTab(path === "" ? "ALL" : path);
@@ -33,7 +37,7 @@ const Header = () => {
                 to={tab === "ALL" ? "/" : `/${category.name.toLowerCase()}`}
                 className={`relative cursor-pointer border-b-2 px-4 pb-6 transition-all duration-200 ${
                   activeTab === tab
-                    ? "border-primary text-primary"
+                    ? "border-primary font-semibold text-primary"
                     : "border-transparent"
                 }`}
                 onClick={() => setActiveTab(tab)}
@@ -61,6 +65,11 @@ const Header = () => {
             setIsOverlayOpen(!isOverlayOpen);
           }}
         />
+        {cartQuantity > 0 && (
+          <div className="font-roboto absolute -right-3 -top-3 flex size-5 items-center justify-center rounded-full bg-black text-sm font-bold text-white">
+            {cartQuantity}
+          </div>
+        )}
 
         {isCartOpen && <Cart />}
       </div>

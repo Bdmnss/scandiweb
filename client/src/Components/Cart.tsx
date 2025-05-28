@@ -117,7 +117,7 @@ const Cart: React.FC = () => {
         </div>
 
         <div className="flex items-center justify-between">
-          <p className="font-medium">Total</p>
+          <p className="font-roboto font-medium">Total</p>
           <p className="font-bold">
             $
             {items

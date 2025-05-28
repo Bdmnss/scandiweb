@@ -72,7 +72,9 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
       </div>
       {product.attributes.map((attribute) => (
         <div key={attribute.name}>
-          <h3 className="text-lg font-bold">{attribute.name}:</h3>
+          <h3 className="font-roboto text-lg font-bold">
+            {attribute.name.toUpperCase()}:
+          </h3>
           <div className="flex gap-3">
             {attribute.items.map((item) => {
               const isSelected = selected[attribute.name] === item.value;
@@ -119,7 +121,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
       ))}
       {product.prices.map((price) => (
         <div key={price.currency.symbol}>
-          <h3 className="text-lg font-bold">PRICE:</h3>
+          <h3 className="font-roboto text-lg font-bold">PRICE:</h3>
           <p className="text-2xl font-bold">
             {price.currency.symbol} {price.amount}
           </p>
@@ -134,7 +136,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
         ADD TO CART
       </button>
 
-      <div>{parse(product.description)} </div>
+      <div className="font-roboto">{parse(product.description)} </div>
     </div>
   );
 };
