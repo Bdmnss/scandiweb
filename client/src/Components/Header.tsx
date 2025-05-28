@@ -24,6 +24,12 @@ const Header = () => {
     setActiveTab(path === "" ? "ALL" : path);
   }, [location]);
 
+  const handleTabClick = (tab: string) => {
+    setActiveTab(tab);
+    setIsCartOpen(false);
+    setIsOverlayOpen(false);
+  };
+
   return (
     <header className="fixed top-0 z-30 flex w-full items-center justify-between bg-white px-72 pt-8">
       <div className="flex gap-6">
@@ -40,7 +46,7 @@ const Header = () => {
                     ? "border-primary font-semibold text-primary"
                     : "border-transparent"
                 }`}
-                onClick={() => setActiveTab(tab)}
+                onClick={() => handleTabClick(tab)}
               >
                 {tab}
               </Link>
@@ -54,16 +60,18 @@ const Header = () => {
         className="absolute left-1/2 pb-6"
       />
 
-      <div className="relative">
+      <div
+        className="relative cursor-pointer"
+        onClick={(e) => {
+          e.stopPropagation();
+          setIsCartOpen(!isCartOpen);
+          setIsOverlayOpen(!isOverlayOpen);
+        }}
+      >
         <img
           src="/cartIcon.svg"
           alt="Cart Icon"
           className="cursor-pointer pb-6"
-          onClick={(e) => {
-            e.stopPropagation();
-            setIsCartOpen(!isCartOpen);
-            setIsOverlayOpen(!isOverlayOpen);
-          }}
         />
         {cartQuantity > 0 && (
           <div className="font-roboto absolute -right-3 -top-3 flex size-5 items-center justify-center rounded-full bg-black text-sm font-bold text-white">

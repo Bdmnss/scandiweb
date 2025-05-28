@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useCartStore } from "../store/cartStore";
 
 interface Product {
   id: string;
@@ -7,6 +8,10 @@ interface Product {
   inStock: boolean;
   prices: { currency: { label: string; symbol: string }; amount: number }[];
   images: { url: string }[];
+  attributes?: {
+    name: string;
+    items: { value: string }[];
+  }[];
 }
 
 interface ProductsGridProps {
@@ -16,9 +21,41 @@ interface ProductsGridProps {
 
 const ProductsGrid: React.FC<ProductsGridProps> = ({ data, name }) => {
   const navigate = useNavigate();
+  const addToCart = useCartStore((state) => state.addToCart);
 
   const handleProductClick = (id: string) => {
     navigate(`/products/${id}`);
+  };
+
+  const handleAddToCart = (product: Product) => {
+    const selectedAttributes: Record<string, string> = {};
+    if (product.attributes) {
+      product.attributes.forEach(
+        (attr: { name: string; items: { value: string }[] }) => {
+          if (attr.items && attr.items.length > 0) {
+            selectedAttributes[attr.name] = attr.items[0].value;
+          }
+        },
+      );
+    }
+    addToCart({
+      ...product,
+      prices: product.prices.map((price) => ({
+        currency: price.currency.symbol,
+        amount: price.amount,
+      })),
+      attributes: (product.attributes ?? []).map((attr) => ({
+        id: attr.name,
+        name: attr.name,
+        type: "text",
+        items: attr.items.map((item) => ({
+          id: item.value,
+          value: item.value,
+          displayValue: item.value,
+        })),
+      })),
+      selectedAttributes,
+    });
   };
 
   return (
@@ -54,7 +91,13 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({ data, name }) => {
               )}
               {product.inStock && (
                 <div className="absolute bottom-6 right-6 opacity-0 transition duration-300 group-hover:opacity-100">
-                  <div className="flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-primary">
+                  <div
+                    className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-primary"
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent card click
+                      handleAddToCart(product);
+                    }}
+                  >
                     <img src="/whiteCartIcon.svg" alt="Cart Icon" />
                   </div>
                 </div>
