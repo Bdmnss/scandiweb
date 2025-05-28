@@ -132,7 +132,7 @@ const Cart: React.FC = () => {
               .toFixed(2)}
           </p>
         </div>
-        <div className="w-full pb-8">
+        <div className={`w-full ${items.length > 1 && "pb-8"}`}>
           <button
             className="w-full bg-primary py-3 text-white disabled:opacity-50"
             disabled={items.length === 0 || loading}
