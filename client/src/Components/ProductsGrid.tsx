@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useCartStore } from "../store/cartStore";
+import { toKebabCase } from "../utils/stringUtils";
 
 interface Product {
   id: string;
@@ -67,6 +68,7 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({ data, name }) => {
             key={product.id}
             className="group relative cursor-pointer bg-white p-4 transition-transform duration-300 hover:scale-[1.03] hover:shadow-custom"
             onClick={() => handleProductClick(product.id)}
+            data-testid={`product-${toKebabCase(product.name)}`}
           >
             <div className="relative mb-6 h-96 w-full">
               <img

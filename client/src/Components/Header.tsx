@@ -37,16 +37,20 @@ const Header = () => {
           data.categories &&
           data.categories.map((category: { name: string }) => {
             const tab = category.name.toUpperCase();
+            const isActive = activeTab === tab;
             return (
               <Link
                 key={tab}
                 to={tab === "ALL" ? "/" : `/${category.name.toLowerCase()}`}
                 className={`relative cursor-pointer border-b-2 px-4 pb-6 transition-all duration-200 ${
-                  activeTab === tab
+                  isActive
                     ? "border-primary font-semibold text-primary"
                     : "border-transparent"
                 }`}
                 onClick={() => handleTabClick(tab)}
+                data-testid={
+                  isActive ? "active-category-link" : "category-link"
+                }
               >
                 {tab}
               </Link>
@@ -59,25 +63,27 @@ const Header = () => {
         alt="Brand Icon"
         className="absolute left-1/2 pb-6"
       />
-
-      <div
-        className="relative cursor-pointer"
-        onClick={(e) => {
-          e.stopPropagation();
-          setIsCartOpen(!isCartOpen);
-          setIsOverlayOpen(!isOverlayOpen);
-        }}
-      >
-        <img
-          src="/cartIcon.svg"
-          alt="Cart Icon"
-          className="cursor-pointer pb-6"
-        />
-        {cartQuantity > 0 && (
-          <div className="font-roboto absolute -right-3 -top-3 flex size-5 items-center justify-center rounded-full bg-black text-sm font-bold text-white">
-            {cartQuantity}
-          </div>
-        )}
+      <div className="relative">
+        <button
+          className="cursor-pointer"
+          data-testid="cart-btn"
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsCartOpen(!isCartOpen);
+            setIsOverlayOpen(!isOverlayOpen);
+          }}
+        >
+          <img
+            src="/cartIcon.svg"
+            alt="Cart Icon"
+            className="cursor-pointer pb-6"
+          />
+          {cartQuantity > 0 && (
+            <div className="font-roboto absolute -right-3 -top-3 flex size-5 items-center justify-center rounded-full bg-black text-sm font-bold text-white">
+              {cartQuantity}
+            </div>
+          )}
+        </button>
 
         {isCartOpen && <Cart />}
       </div>

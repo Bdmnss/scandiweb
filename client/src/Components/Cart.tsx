@@ -1,12 +1,15 @@
 import React from "react";
 import { useCartStore } from "../store/cartStore";
 import { useAddOrder } from "../lib/graphql/hooks";
+import { toKebabCase } from "../utils/stringUtils";
 
 const Cart: React.FC = () => {
   const items = useCartStore((state) => state.items);
   const increment = useCartStore((state) => state.increment);
   const decrement = useCartStore((state) => state.decrement);
   const { addOrder, loading } = useAddOrder();
+
+  console.log("Cart items:", items);
 
   const handlePlaceOrder = async () => {
     if (!items.length) return;
@@ -15,7 +18,7 @@ const Cart: React.FC = () => {
 
   return (
     <div
-      className="absolute right-0 top-8 z-50 flex max-h-[628px] w-96 overflow-scroll bg-white px-4 py-8"
+      className="absolute -right-6 top-12 z-50 flex max-h-[628px] w-96 overflow-scroll bg-white px-4 py-8"
       onClick={(e) => e.stopPropagation()}
     >
       <div className="flex w-full flex-col gap-8">
@@ -44,13 +47,19 @@ const Cart: React.FC = () => {
                 </p>
                 <div className="flex flex-col gap-2">
                   {product.attributes.map((attribute) => (
-                    <div key={attribute.name}>
+                    <div
+                      key={attribute.name}
+                      data-testid={`cart-item-attribute-${toKebabCase(
+                        attribute.name,
+                      )}`}
+                    >
                       <h3 className="text-sm">{attribute.name}:</h3>
                       <div className="flex gap-3">
                         {attribute.items.map((item) => {
                           const selectedItem =
                             product.selectedAttributes?.[attribute.name];
                           const isSelected = selectedItem === item.value;
+                          const attrKebab = toKebabCase(attribute.name);
 
                           return (
                             <div key={item.value}>
@@ -64,6 +73,11 @@ const Cart: React.FC = () => {
                                 }`}
                                 disabled
                                 tabIndex={-1}
+                                data-testid={
+                                  isSelected
+                                    ? `cart-item-attribute-${attrKebab}-${attrKebab}-selected`
+                                    : `cart-item-attribute-${attrKebab}-${attrKebab}`
+                                }
                               >
                                 {attribute.type === "swatch" && (
                                   <div
@@ -93,13 +107,15 @@ const Cart: React.FC = () => {
                   <button
                     className="flex size-6 items-center justify-center border border-textPrimary text-2xl transition-colors hover:bg-textPrimary hover:text-white"
                     onClick={() => increment(idx)}
+                    data-testid="cart-item-amount-increase"
                   >
                     +
                   </button>
-                  <p>{product.quantity}</p>
+                  <p data-testid="cart-item-amount">{product.quantity}</p>
                   <button
                     className="flex size-6 items-center justify-center border border-textPrimary text-2xl transition-colors hover:bg-textPrimary hover:text-white"
                     onClick={() => decrement(idx)}
+                    data-testid="cart-item-amount-decrease"
                   >
                     -
                   </button>
@@ -119,7 +135,10 @@ const Cart: React.FC = () => {
           ))}
         </div>
 
-        <div className="flex items-center justify-between">
+        <div
+          className="flex items-center justify-between"
+          data-testid="cart-total"
+        >
           <p className="font-roboto font-medium">Total</p>
           <p className="font-bold">
             $

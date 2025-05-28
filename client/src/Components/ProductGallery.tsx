@@ -47,7 +47,10 @@ class ProductGallery extends React.Component<ProductGalleryProps> {
     const imageUrls = images.map((img) => img.url);
 
     return (
-      <div className="relative flex w-3/4 flex-row">
+      <div
+        className="relative flex w-3/4 flex-row"
+        data-testid="product-gallery"
+      >
         {/* Thumbnail Gallery */}
         <ul className="mr-10 flex flex-col gap-4">
           {imageUrls.map((imageUrl, index) => (

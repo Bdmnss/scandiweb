@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import parse from "html-react-parser";
 import { useCartStore } from "../store/cartStore";
+import { toKebabCase } from "../utils/stringUtils";
 
 interface ProductDetailsProps {
   product: {
@@ -29,7 +30,6 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
   const setIsCartOpen = useCartStore((state) => state.setIsCartOpen);
   const setIsOverlayOpen = useCartStore((state) => state.setIsOverlayOpen);
 
-  // Use attribute.name as key for selection
   const allSelected =
     product.attributes.length === 0 ||
     product.attributes.every((attr) => selected[attr.name]);
@@ -48,17 +48,22 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
         amount: price.amount,
       })),
       attributes: product.attributes.map((attr) => ({
-        id: attr.id ?? attr.name, // fallback to name if id is undefined
+        id: attr.id ?? attr.name,
         name: attr.name,
         type: attr.type,
         items: attr.items.map((item) => ({
-          id: item.id ?? item.value, // fallback to value if id is undefined
+          id: item.id ?? item.value,
           value: item.value,
-          displayValue: item.displayValue ?? item.value, // ensure displayValue is always a string
+          displayValue: item.displayValue ?? item.value,
         })),
       })),
       selectedAttributes: selected,
       images: product.images || [],
+      ...(product.brand && { brand: product.brand }),
+      ...(product.description && { description: product.description }),
+      ...(typeof product.inStock !== "undefined" && {
+        inStock: product.inStock,
+      }),
     });
     setIsCartOpen(true);
     setIsOverlayOpen(true);
@@ -71,7 +76,10 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
         <h2 className="text-3xl">{product.name}</h2>
       </div>
       {product.attributes.map((attribute) => (
-        <div key={attribute.name}>
+        <div
+          key={attribute.name}
+          data-testid={`product-attribute-${toKebabCase(attribute.name)}`}
+        >
           <h3 className="font-roboto text-lg font-bold">
             {attribute.name.toUpperCase()}:
           </h3>
@@ -132,11 +140,14 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
         disabled={!product.inStock || !allSelected}
         className="h-14 w-full bg-primary font-semibold text-white disabled:opacity-50"
         onClick={handleAddToCart}
+        data-testid="add-to-cart"
       >
         ADD TO CART
       </button>
 
-      <div className="font-roboto">{parse(product.description)} </div>
+      <div className="font-roboto" data-testid="product-description">
+        {parse(product.description)}{" "}
+      </div>
     </div>
   );
 };
