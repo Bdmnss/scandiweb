@@ -17,12 +17,7 @@ const Header = () => {
   }, [location]);
 
   return (
-    <header
-      className="fixed top-0 z-30 flex w-full items-center justify-between bg-white px-72 pt-8"
-      onClick={() => {
-        setIsOverlayOpen(false);
-      }}
-    >
+    <header className="fixed top-0 z-30 flex w-full items-center justify-between bg-white px-72 pt-8">
       <div className="flex gap-6">
         {data &&
           data.categories &&
@@ -63,7 +58,7 @@ const Header = () => {
           }}
         />
 
-        {isCartOpen && <Cart setIsCartOpen={setIsCartOpen} />}
+        {isCartOpen && <Cart />}
       </div>
 
       {isOverlayOpen && (
