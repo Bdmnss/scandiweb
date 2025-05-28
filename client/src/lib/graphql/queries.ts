@@ -56,3 +56,24 @@ export const GetProduct = gql`
   }
   ${ProductFields}
 `;
+
+export const CreateOrder = gql`
+  mutation CreateOrder($items: [String!]!) {
+    createOrder(items: $items) {
+      id
+      total_amount
+      total_currency
+      items {
+        id
+        product_id
+        product_name
+        attribute_values
+        quantity
+        paid_amount
+        paid_currency
+        created_at
+        updated_at
+      }
+    }
+  }
+`;

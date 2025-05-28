@@ -54,6 +54,16 @@ class Controller
                         ],
                         'resolve' => static fn($calc, array $args): int => $args['x'] + $args['y'],
                     ],
+                    'createOrder' => [
+                        'type' => new \App\GraphQL\Types\OrderType(),
+                        'args' => [
+                            'items' => Type::listOf(Type::nonNull(Type::string())),
+                        ],
+                        'resolve' => function ($root, $args) {
+                            $items = array_map(fn($item) => json_decode($item, true), $args['items']);
+                            return \App\GraphQL\Resolvers\OrdersResolver::create($root, ['items' => $items]);
+                        },
+                    ],
                 ],
             ]);
 

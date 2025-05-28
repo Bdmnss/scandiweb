@@ -1,10 +1,17 @@
 import React from "react";
 import { useCartStore } from "../store/cartStore";
+import { useAddOrder } from "../lib/graphql/hooks";
 
 const Cart: React.FC = () => {
   const items = useCartStore((state) => state.items);
   const increment = useCartStore((state) => state.increment);
   const decrement = useCartStore((state) => state.decrement);
+  const { addOrder, loading } = useAddOrder();
+
+  const handlePlaceOrder = async () => {
+    if (!items.length) return;
+    await addOrder(items);
+  };
 
   return (
     <div
@@ -125,7 +132,8 @@ const Cart: React.FC = () => {
         <div className="w-full pb-8">
           <button
             className="w-full bg-primary py-3 text-white disabled:opacity-50"
-            disabled={items.length === 0}
+            disabled={items.length === 0 || loading}
+            onClick={handlePlaceOrder}
           >
             PLACE ORDER
           </button>

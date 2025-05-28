@@ -27,6 +27,7 @@ type CartState = {
   addToCart: (item: Omit<CartItem, "quantity">) => void;
   increment: (index: number) => void;
   decrement: (index: number) => void;
+  clearCart: () => void;
 };
 
 export const useCartStore = create<CartState>()(
@@ -67,6 +68,7 @@ export const useCartStore = create<CartState>()(
         }
         set({ items });
       },
+      clearCart: () => set({ items: [] }),
     }),
     { name: "cart-storage" },
   ),
