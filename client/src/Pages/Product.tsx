@@ -10,6 +10,7 @@ const Product = () => {
   const { id } = useParams<{ id: string }>();
 
   const { data, loading, error } = useProduct(id!);
+  const { product } = data || {};
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -23,10 +24,14 @@ const Product = () => {
     return <CustomError message={(error as unknown as Error).message} />;
   }
 
+  if (!product) {
+    return <CustomError message="Product not found" />;
+  }
+
   return (
     <div className="flex gap-28">
-      <ProductGallery product={data.product} />
-      <ProductDetails product={data.product} />
+      <ProductGallery product={product} />
+      <ProductDetails product={product} />
     </div>
   );
 };

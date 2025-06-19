@@ -1,19 +1,27 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import type { CartItemAttribute } from "../Components/ProductDetails";
+
+export interface AttributeItem {
+  __typename?: string;
+  id: string;
+  value: string;
+  displayValue: string;
+}
 
 type Attribute = {
   id: string;
   name: string;
   type: string;
-  items: { id: string; value: string; displayValue: string }[];
+  items: AttributeItem[];
 };
 
 type CartItem = {
   id: string;
   name: string;
-  prices: { currency: string; amount: number }[];
+  price: { currency: { label: string; symbol: string }; amount: number };
   attributes: Attribute[];
-  selectedAttributes: Record<string, string>;
+  selectedAttributes: CartItemAttribute[];
   quantity: number;
   images: { url: string }[];
 };

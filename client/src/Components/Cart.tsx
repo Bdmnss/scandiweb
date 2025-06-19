@@ -38,12 +38,7 @@ const Cart: React.FC = () => {
               <div className="flex flex-col gap-3">
                 <p className="text-lg font-light">{product.name}</p>
                 <p>
-                  {product.prices.map((price) => (
-                    <span key={price.currency}>
-                      {price.currency}
-                      {price.amount}
-                    </span>
-                  ))}
+                  {product.price.currency.symbol} {product.price.amount}
                 </p>
                 <div className="flex flex-col gap-2">
                   {product.attributes.map((attribute) => (
@@ -56,9 +51,10 @@ const Cart: React.FC = () => {
                       <h3 className="text-sm">{attribute.name}:</h3>
                       <div className="flex gap-3">
                         {attribute.items.map((item) => {
-                          const selectedItem =
-                            product.selectedAttributes?.[attribute.name];
-                          const isSelected = selectedItem === item.value;
+                          const selectedItem = product.selectedAttributes.find(
+                            (selectedItem) => selectedItem.id === item.id,
+                          );
+                          const isSelected = selectedItem?.value === item.value;
                           const attrKebab = toKebabCase(attribute.name);
 
                           return (
@@ -66,10 +62,10 @@ const Cart: React.FC = () => {
                               <button
                                 className={`duration-300 ${
                                   attribute.type === "text" &&
-                                  `border border-textPrimary px-2 py-1 ${isSelected ? "bg-textPrimary text-white" : ""}`
+                                  `border border-black px-2 py-1 ${isSelected ? "bg-black text-white" : ""}`
                                 } ${
                                   attribute.type === "swatch" &&
-                                  `${isSelected && "border-primary ring-2 ring-primary"}`
+                                  `${isSelected && "border-green ring-green ring-2"}`
                                 }`}
                                 disabled
                                 tabIndex={-1}
@@ -105,7 +101,7 @@ const Cart: React.FC = () => {
               <div className="relative">
                 <div className="absolute -left-9 flex h-full flex-col items-center justify-between">
                   <button
-                    className="flex size-6 items-center justify-center border border-textPrimary text-2xl transition-colors hover:bg-textPrimary hover:text-white"
+                    className="flex size-6 items-center justify-center border border-black text-2xl transition-colors hover:bg-black hover:text-white"
                     onClick={() => increment(idx)}
                     data-testid="cart-item-amount-increase"
                   >
@@ -113,7 +109,7 @@ const Cart: React.FC = () => {
                   </button>
                   <p data-testid="cart-item-amount">{product.quantity}</p>
                   <button
-                    className="flex size-6 items-center justify-center border border-textPrimary text-2xl transition-colors hover:bg-textPrimary hover:text-white"
+                    className="flex size-6 items-center justify-center border border-black text-2xl transition-colors hover:bg-black hover:text-white"
                     onClick={() => decrement(idx)}
                     data-testid="cart-item-amount-decrease"
                   >
@@ -144,8 +140,7 @@ const Cart: React.FC = () => {
             $
             {items
               .reduce(
-                (sum, item) =>
-                  sum + (item.prices[0]?.amount || 0) * item.quantity,
+                (sum, item) => sum + (item.price.amount || 0) * item.quantity,
                 0,
               )
               .toFixed(2)}
@@ -153,7 +148,7 @@ const Cart: React.FC = () => {
         </div>
         <div className={`w-full ${items.length > 1 && "pb-8"}`}>
           <button
-            className="w-full bg-primary py-3 text-white disabled:opacity-50"
+            className="bg-green w-full py-3 text-white disabled:opacity-50"
             disabled={items.length === 0 || loading}
             onClick={handlePlaceOrder}
           >

@@ -10,55 +10,24 @@ class Product extends Model
 {
     protected static string $table = 'products';
 
-    public static function getAllWithDetails(?string $category = null): array
+    public static function getAll(array $filters = []): array
     {
-        $query = 'SELECT * FROM ' . static::$table;
-        $params = [];
-
-        if ($category && strtolower($category) !== 'all') {
-            $query .= ' WHERE category = :category';
-            $params['category'] = $category;
-        }
-
-        $products = (new static())->db->query($query, $params)->get();
-
-        if (empty($products)) {
-            return [];
-        }
-
-        foreach ($products as &$product) {
-            self::attachRelations($product);
-        }
-
-        return $products;
+        return parent::getAll($filters);
     }
 
-    public static function getByIdWithDetails(string $id): ?array
+    public static function getOne(string $value, ?string $column = 'id'): ?array
     {
-        $query = 'SELECT * FROM ' . static::$table . ' WHERE id = :id';
-        $params = ['id' => $id];
-        $results = (new static())->db->query($query, $params)->get();
-        $product = $results[0] ?? null;
+        $product = parent::getOne($value, $column);
 
         if (!$product) {
             return null;
         }
 
-        self::attachRelations($product);
         return $product;
     }
 
-    private static function attachRelations(array &$product): void
+    public static function getPrice(string $productId): array
     {
-        if (empty($product['id'])) {
-            $product['images'] = [];
-            $product['prices'] = [];
-            $product['attributes'] = [];
-            return;
-        }
-
-        $product['images'] = Image::getImagesByProductId($product['id']);
-        $product['prices'] = Price::getPricesByProductId($product['id']);
-        $product['attributes'] = Attribute::getAttributesByProductId($product['id']);
+        return Price::getOne($productId);
     }
 }

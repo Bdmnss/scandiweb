@@ -18,16 +18,33 @@ abstract class Model
         }
     }
 
-    public static function all(): array
+    public static function getAll(array $filters = []): array
     {
+        $instance = new static();
         $query = "SELECT * FROM " . static::$table;
-        return (new static())->db->query($query)->get();
+        $params = [];
+
+        if (!empty($filters)) {
+            $conditions = [];
+            foreach ($filters as $column => $value) {
+                if ($value !== null) {
+                    $conditions[] = $column . " = :" . $column;
+                    $params[$column] = $value;
+                }
+            }
+
+            if (!empty($conditions)) {
+                $query .= " WHERE " . implode(" AND ", $conditions);
+            }
+        }
+
+        return $instance->db->query($query, $params)->get();
     }
 
-    public static function find(string $value, ?string $column = 'id'): ?array
+    public static function getOne(string $value, ?string $column = 'id'): ?array
     {
-        $query = "SELECT * FROM " . static::$table . " WHERE . $column . = :id";
-        $result = (new static())->db->query($query, ['id' => $value])->get();
-        return $result ? $result[0] : null;
+        $instance = new static();
+        $query = "SELECT * FROM " . static::$table . " WHERE " . $column . " = :value LIMIT 1";
+        return $instance->db->query($query, ['value' => $value])->fetch();
     }
 }

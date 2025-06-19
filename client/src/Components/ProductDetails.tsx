@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import parse from "html-react-parser";
-import { useCartStore } from "../store/cartStore";
+import { useCartStore, type AttributeItem } from "../store/cartStore";
 import { toKebabCase } from "../utils/stringUtils";
+
+export interface CartItemAttribute extends AttributeItem {
+  attributeId: string;
+}
 
 interface ProductDetailsProps {
   product: {
@@ -9,15 +13,15 @@ interface ProductDetailsProps {
     brand: string;
     name: string;
     attributes: Array<{
-      id?: string;
+      id: string;
       name: string;
       type: string;
-      items: Array<{ id?: string; value: string; displayValue?: string }>;
+      items: Array<AttributeItem>;
     }>;
-    prices: Array<{
-      currency: { symbol: string };
+    price: {
+      currency: { label: string; symbol: string };
       amount: number;
-    }>;
+    };
     inStock: boolean;
     description: string;
     images?: { url: string }[];
@@ -25,7 +29,9 @@ interface ProductDetailsProps {
 }
 
 const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
-  const [selected, setSelected] = useState<Record<string, string>>({});
+  const [selected, setSelected] = useState<Record<string, CartItemAttribute>>(
+    {},
+  );
   const addToCart = useCartStore((state) => state.addToCart);
   const setIsCartOpen = useCartStore((state) => state.setIsCartOpen);
   const setIsOverlayOpen = useCartStore((state) => state.setIsOverlayOpen);
@@ -34,7 +40,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
     product.attributes.length === 0 ||
     product.attributes.every((attr) => selected[attr.name]);
 
-  const handleSelect = (attrName: string, value: string) => {
+  const handleSelect = (attrName: string, value: CartItemAttribute) => {
     setSelected((prev) => ({ ...prev, [attrName]: value }));
   };
 
@@ -43,10 +49,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
     addToCart({
       id: product.id,
       name: product.name,
-      prices: product.prices.map((price) => ({
-        currency: price.currency.symbol,
-        amount: price.amount,
-      })),
+      price: product.price,
       attributes: product.attributes.map((attr) => ({
         id: attr.id ?? attr.name,
         name: attr.name,
@@ -54,10 +57,11 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
         items: attr.items.map((item) => ({
           id: item.id ?? item.value,
           value: item.value,
+          attributeId: attr.id,
           displayValue: item.displayValue ?? item.value,
         })),
       })),
-      selectedAttributes: selected,
+      selectedAttributes: Object.values(selected),
       images: product.images || [],
       ...(product.brand && { brand: product.brand }),
       ...(product.description && { description: product.description }),
@@ -84,8 +88,10 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
             {attribute.name.toUpperCase()}:
           </h3>
           <div className="flex gap-3">
-            {attribute.items.map((item) => {
-              const isSelected = selected[attribute.name] === item.value;
+            {/* eslint-disable-next-line @typescript-eslint/no-unused-vars */}
+            {attribute.items.map(({ __typename, ...item }) => {
+              const isSelected = selected[attribute.name]?.id === item.id;
+
               return (
                 <div key={item.value}>
                   <button
@@ -94,15 +100,15 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
                       attribute.type === "text" &&
                       `border transition-colors ${
                         isSelected
-                          ? "border-textPrimary bg-textPrimary text-white"
-                          : "border-textPrimary hover:bg-textPrimary hover:text-white"
+                          ? "border-black bg-black text-white"
+                          : "border-black hover:bg-black hover:text-white"
                       }`
                     } ${
                       attribute.type === "swatch" &&
                       `border ${
                         isSelected
-                          ? "border-primary ring-2 ring-primary"
-                          : "ring-primary hover:border-primary hover:ring-2"
+                          ? "border-green ring-green ring-2"
+                          : "ring-green hover:border-green hover:ring-2"
                       }`
                     } `}
                     style={
@@ -110,7 +116,12 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
                         ? { backgroundColor: item.value }
                         : {}
                     }
-                    onClick={() => handleSelect(attribute.name, item.value)}
+                    onClick={() =>
+                      handleSelect(attribute.name, {
+                        ...item,
+                        attributeId: attribute.id,
+                      })
+                    }
                   >
                     {attribute.type === "text" && (
                       <div className="flex size-full items-center justify-center">
@@ -127,18 +138,16 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
           </div>
         </div>
       ))}
-      {product.prices.map((price) => (
-        <div key={price.currency.symbol}>
-          <h3 className="font-roboto text-lg font-bold">PRICE:</h3>
-          <p className="text-2xl font-bold">
-            {price.currency.symbol} {price.amount}
-          </p>
-        </div>
-      ))}
+      <div>
+        <h3 className="font-roboto text-lg font-bold">PRICE:</h3>
+        <p className="text-2xl font-bold">
+          {product.price.currency.symbol} {product.price.amount}
+        </p>
+      </div>
 
       <button
         disabled={!product.inStock || !allSelected}
-        className="h-14 w-full bg-primary font-semibold text-white disabled:opacity-50"
+        className="bg-green h-14 w-full font-semibold text-white disabled:opacity-50"
         onClick={handleAddToCart}
         data-testid="add-to-cart"
       >

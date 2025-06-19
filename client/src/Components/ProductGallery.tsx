@@ -1,10 +1,8 @@
 import React from "react";
+import type { Product } from "../types";
 
 interface ProductGalleryProps {
-  product: {
-    name: string;
-    images: { url: string }[];
-  };
+  product: Product;
 }
 
 class ProductGallery extends React.Component<ProductGalleryProps> {
@@ -17,7 +15,7 @@ class ProductGallery extends React.Component<ProductGalleryProps> {
     this.setState({ fading: true });
     setTimeout(() => {
       this.setState({ activeImage: newImage, fading: false });
-    }, 300); // Duration must match the fade-out time
+    }, 300);
   };
 
   selectImage = (image: string) => {

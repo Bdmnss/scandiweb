@@ -2,25 +2,21 @@
 
 namespace App\GraphQL\Types;
 
-use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
+use GraphQL\Type\Definition\InputObjectType;
 
-class OrderItemType extends ObjectType
+class OrderItemType extends InputObjectType
 {
     public function __construct()
     {
         parent::__construct([
             'name' => 'OrderItem',
             'fields' => [
-                'id' => Type::id(),
-                'product_id' => Type::string(),
-                'product_name' => Type::string(),
-                'attribute_values' => Type::string(),
-                'quantity' => Type::int(),
-                'paid_amount' => Type::float(),
-                'paid_currency' => Type::string(),
-                'created_at' => Type::string(),
-                'updated_at' => Type::string(),
+                'productId' => ['type' => Type::nonNull(Type::string())],
+                'quantity' => ['type' => Type::nonNull(Type::int())],
+                'attributeValues' => [
+                    'type' => Type::listOf(new OrderItemAttributeType())
+                ],
             ],
         ]);
     }

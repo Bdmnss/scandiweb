@@ -7,7 +7,8 @@ use App\Database;
 class Order extends Model
 {
     protected static string $table = 'orders';
-    private const DEFAULT_TOTAL_AMOUNT = 0.0;
+
+    private const DEFAULT_TOTAL_AMOUNT = 0;
     private const DEFAULT_CURRENCY = 'USD';
 
     public static function create(Database $db): array

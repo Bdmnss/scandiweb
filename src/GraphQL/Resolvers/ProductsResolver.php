@@ -6,14 +6,19 @@ use App\Models\Product;
 
 class ProductsResolver
 {
-    public static function resolve(?string $category = null): array
+    public static function getAll(?string $category = null): array
     {
-        $products = Product::getAllWithDetails($category);
-        return is_array($products) ? $products : [];
+        $filters = [];
+
+        if ($category && strtolower($category) !== 'all') {
+            $filters['category'] = $category;
+        }
+
+        return Product::getAll($filters);
     }
-    
-    public static function single(string $id): ?array
+
+    public static function getOne(string $id): ?array
     {
-        return Product::getByIdWithDetails($id);
+        return Product::getOne($id);
     }
 }

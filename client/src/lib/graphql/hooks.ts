@@ -6,14 +6,21 @@ import {
   CreateOrder,
 } from "./queries";
 import { useCartStore as useCartStoreBase } from "../../store/cartStore";
+import type { CartItemAttribute } from "../../Components/ProductDetails";
+import type {
+  CategoriesResponse,
+  ProductResponse,
+  ProductsResponse,
+} from "../../types";
 
 export function useCategories() {
-  const { data, loading, error } = useQuery(GetAllCategories);
+  const { data, loading, error } =
+    useQuery<CategoriesResponse>(GetAllCategories);
   return { data, loading, error: Boolean(error) };
 }
 
 export function useProducts(category?: string) {
-  const { data, loading, error } = useQuery(GetAllProducts, {
+  const { data, loading, error } = useQuery<ProductsResponse>(GetAllProducts, {
     variables: category ? { category } : {},
     skip: category === undefined,
   });
@@ -21,7 +28,7 @@ export function useProducts(category?: string) {
 }
 
 export function useProduct(id: string) {
-  const { data, loading, error } = useQuery(GetProduct, {
+  const { data, loading, error } = useQuery<ProductResponse>(GetProduct, {
     variables: { id },
     skip: !id,
   });
@@ -36,23 +43,20 @@ export function useAddOrder() {
 
   type CartItem = {
     id: string;
-    name: string;
-    selectedAttributes: Record<string, unknown>;
     quantity: number;
-    prices: { amount: number; currency: string }[];
+    selectedAttributes: CartItemAttribute[];
   };
 
   const addOrder = async (items: CartItem[]) => {
-    const itemsForMutation = items.map((item) =>
-      JSON.stringify({
-        productId: item.id,
-        productName: item.name,
-        attributeValues: JSON.stringify(item.selectedAttributes),
-        quantity: item.quantity,
-        paidAmount: item.prices[0]?.amount ?? 0,
-        paidCurrency: item.prices[0]?.currency ?? "USD",
-      }),
-    );
+    const itemsForMutation = items.map((item) => ({
+      productId: item.id,
+      quantity: item.quantity,
+      attributeValues: item.selectedAttributes.map((attribute) => ({
+        id: attribute.attributeId,
+        value: attribute.value,
+      })),
+    }));
+
     await createOrder({ variables: { items: itemsForMutation } });
     clearCart();
   };

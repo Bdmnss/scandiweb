@@ -9,7 +9,7 @@ const Header = () => {
   const location = useLocation();
   const [activeTab, setActiveTab] = useState("ALL");
   const { data } = useCategories();
-
+  const { categories } = data || { categories: [] };
   const isCartOpen = useCartStore((state) => state.isCartOpen);
   const isOverlayOpen = useCartStore((state) => state.isOverlayOpen);
   const setIsCartOpen = useCartStore((state) => state.setIsCartOpen);
@@ -30,32 +30,30 @@ const Header = () => {
     setIsOverlayOpen(false);
   };
 
+  if (!categories) return null;
+
   return (
     <header className="fixed top-0 z-30 flex w-full items-center justify-between bg-white px-72 pt-8">
       <div className="flex gap-6">
-        {data &&
-          data.categories &&
-          data.categories.map((category: { name: string }) => {
-            const tab = category.name.toUpperCase();
-            const isActive = activeTab === tab;
-            return (
-              <Link
-                key={tab}
-                to={tab === "ALL" ? "/" : `/${category.name.toLowerCase()}`}
-                className={`relative cursor-pointer border-b-2 px-4 pb-6 transition-all duration-200 ${
-                  isActive
-                    ? "border-primary font-semibold text-primary"
-                    : "border-transparent"
-                }`}
-                onClick={() => handleTabClick(tab)}
-                data-testid={
-                  isActive ? "active-category-link" : "category-link"
-                }
-              >
-                {tab}
-              </Link>
-            );
-          })}
+        {categories.map((category) => {
+          const tab = category.name.toUpperCase();
+          const isActive = activeTab === tab;
+          return (
+            <Link
+              key={tab}
+              to={tab === "ALL" ? "/" : `/${category.name.toLowerCase()}`}
+              className={`relative cursor-pointer border-b-2 px-4 pb-6 transition-all duration-200 ${
+                isActive
+                  ? "border-green text-green font-semibold"
+                  : "border-transparent"
+              }`}
+              onClick={() => handleTabClick(tab)}
+              data-testid={isActive ? "active-category-link" : "category-link"}
+            >
+              {tab}
+            </Link>
+          );
+        })}
       </div>
 
       <img
@@ -79,7 +77,7 @@ const Header = () => {
             className="cursor-pointer pb-6"
           />
           {cartQuantity > 0 && (
-            <div className="font-roboto absolute -right-3 -top-3 flex size-5 items-center justify-center rounded-full bg-black text-sm font-bold text-white">
+            <div className="absolute -right-3 -top-3 flex size-5 items-center justify-center rounded-full bg-black font-roboto text-sm font-bold text-white">
               {cartQuantity}
             </div>
           )}

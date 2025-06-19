@@ -24,6 +24,7 @@ class Database
         try {
             $this->connection = new PDO($dsn, $username, $password);
             $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $this->connection->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             abort(500, 'Database connection failed');
         }
@@ -46,8 +47,39 @@ class Database
         return $this->statement->fetchAll();
     }
 
+    public function fetch(): ?array
+    {
+        $result = $this->statement->fetch();
+
+        if (!$result) {
+            abort();
+        }
+
+        return $result;
+    }
+
+    public function fetchColumn()
+    {
+        return $this->statement->fetchColumn();
+    }
+
     public function getLastInsertId()
     {
         return $this->connection->lastInsertId();
+    }
+
+    public function beginTransaction()
+    {
+        $this->connection->beginTransaction();
+    }
+
+    public function commit()
+    {
+        $this->connection->commit();
+    }
+
+    public function rollback()
+    {
+        $this->connection->rollBack();
     }
 }

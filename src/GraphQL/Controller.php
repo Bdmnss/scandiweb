@@ -3,8 +3,12 @@
 namespace App\GraphQL;
 
 use App\GraphQL\Resolvers\CategoriesResolver;
+use App\GraphQL\Resolvers\ProductsResolver;
+use App\GraphQL\Resolvers\OrdersResolver;
 use App\GraphQL\Types\CategoryType;
+use App\GraphQL\Types\OrderItemType;
 use App\GraphQL\Types\ProductType;
+use App\GraphQL\Types\OrderType;
 use GraphQL\GraphQL as GraphQLBase;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
@@ -17,8 +21,9 @@ class Controller
 {
     public static function handle()
     {
-        $productType = new ProductType();
         try {
+            $productType = new ProductType();
+
             $queryType = new ObjectType([
                 'name' => 'Query',
                 'fields' => [
@@ -31,14 +36,14 @@ class Controller
                         'args' => [
                             'category' => ['type' => Type::string()],
                         ],
-                        'resolve' => static fn($rootValue, array $args) => Resolvers\ProductsResolver::resolve($args['category'] ?? null),
+                        'resolve' => static fn($rootValue, array $args) => ProductsResolver::getAll($args['category'] ?? null),
                     ],
                     'product' => [
                         'type' => $productType,
                         'args' => [
                             'id' => ['type' => Type::nonNull(Type::string())],
                         ],
-                        'resolve' => static fn($rootValue, array $args) => \App\GraphQL\Resolvers\ProductsResolver::single($args['id']),
+                        'resolve' => static fn($rootValue, array $args) => ProductsResolver::getOne($args['id']),
                     ],
                 ],
             ]);
@@ -46,22 +51,13 @@ class Controller
             $mutationType = new ObjectType([
                 'name' => 'Mutation',
                 'fields' => [
-                    'sum' => [
-                        'type' => Type::int(),
-                        'args' => [
-                            'x' => ['type' => Type::int()],
-                            'y' => ['type' => Type::int()],
-                        ],
-                        'resolve' => static fn($calc, array $args): int => $args['x'] + $args['y'],
-                    ],
                     'createOrder' => [
-                        'type' => new \App\GraphQL\Types\OrderType(),
+                        'type' => Type::string(),
                         'args' => [
-                            'items' => Type::listOf(Type::nonNull(Type::string())),
+                            'items' => ['type' => Type::listOf(new OrderItemType())],
                         ],
-                        'resolve' => function ($root, $args) {
-                            $items = array_map(fn($item) => json_decode($item, true), $args['items']);
-                            return \App\GraphQL\Resolvers\OrdersResolver::create($root, ['items' => $items]);
+                        'resolve' => static function ($root, $args) {
+                            return OrdersResolver::create($root, $args);
                         },
                     ],
                 ],
@@ -86,11 +82,7 @@ class Controller
             $result = GraphQLBase::executeQuery($schema, $query, $rootValue, null, $variableValues);
             $output = $result->toArray();
         } catch (Throwable $e) {
-            $output = [
-                'error' => [
-                    'message' => $e->getMessage(),
-                ],
-            ];
+            abort(500, $e->getMessage());
         }
 
         header('Content-Type: application/json; charset=UTF-8');

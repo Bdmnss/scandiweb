@@ -5,15 +5,15 @@ namespace App\GraphQL\Types;
 use GraphQL\Type\Definition\Type;
 use GraphQL\Type\Definition\ObjectType;
 
-class PriceType extends ObjectType
+class CurrencyType extends ObjectType
 {
     public function __construct()
     {
         parent::__construct([
-            'name' => 'Price',
+            'name' => 'Currency',
             'fields' => [
-                'amount' => Type::string(),
-                'currency' => new CurrencyType(),
+                'label' => Type::string(),
+                'symbol' => Type::string(),
             ],
         ]);
     }

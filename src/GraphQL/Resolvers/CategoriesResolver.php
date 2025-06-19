@@ -8,6 +8,6 @@ class CategoriesResolver
 {
     public static function resolve(): array
     {
-        return Category::all();
+        return Category::getAll();
     }
 }

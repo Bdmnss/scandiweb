@@ -1,24 +1,44 @@
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 import Header from "./Components/Header";
-import Home from "./Pages/Home";
-import Clothes from "./Pages/Clothes";
-import Tech from "./Pages/Tech";
+import Products from "./Pages/Products";
 import Product from "./Pages/Product";
+import CustomError from "./Components/CustomError";
 
-function App() {
+function Layout() {
   return (
-    <Router>
+    <>
       <Header />
       <main className="px-72 py-40">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/clothes" element={<Clothes />} />
-          <Route path="/tech" element={<Tech />} />
-          <Route path="/products/:id" element={<Product />} />
-        </Routes>
+        <Outlet />
       </main>
-    </Router>
+    </>
   );
+}
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Layout />,
+    errorElement: <CustomError message="Something went wrong" />,
+    children: [
+      {
+        index: true,
+        element: <Products />,
+      },
+      {
+        path: "/:category",
+        element: <Products />,
+      },
+      {
+        path: "products/:id",
+        element: <Product />,
+      },
+    ],
+  },
+]);
+
+function App() {
+  return <RouterProvider router={router} />;
 }
 
 export default App;

@@ -2,25 +2,14 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useCartStore } from "../store/cartStore";
 import { toKebabCase } from "../utils/stringUtils";
-
-interface Product {
-  id: string;
-  name: string;
-  inStock: boolean;
-  prices: { currency: { label: string; symbol: string }; amount: number }[];
-  images: { url: string }[];
-  attributes?: {
-    name: string;
-    items: { value: string }[];
-  }[];
-}
-
+import type { CartItemAttribute } from "./ProductDetails";
+import type { Product } from "../types";
 interface ProductsGridProps {
-  data: Product[];
+  products: Product[];
   name: string;
 }
 
-const ProductsGrid: React.FC<ProductsGridProps> = ({ data, name }) => {
+const ProductsGrid: React.FC<ProductsGridProps> = ({ products, name }) => {
   const navigate = useNavigate();
   const addToCart = useCartStore((state) => state.addToCart);
 
@@ -29,22 +18,30 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({ data, name }) => {
   };
 
   const handleAddToCart = (product: Product) => {
-    const selectedAttributes: Record<string, string> = {};
+    const selectedAttributes: CartItemAttribute[] = [];
     if (product.attributes) {
       product.attributes.forEach(
         (attr: { name: string; items: { value: string }[] }) => {
           if (attr.items && attr.items.length > 0) {
-            selectedAttributes[attr.name] = attr.items[0].value;
+            selectedAttributes.push({
+              attributeId: attr.name,
+              id: attr.items[0].value,
+              value: attr.items[0].value,
+              displayValue: attr.items[0].value,
+            });
           }
         },
       );
     }
     addToCart({
       ...product,
-      prices: product.prices.map((price) => ({
-        currency: price.currency.symbol,
-        amount: price.amount,
-      })),
+      price: {
+        currency: {
+          label: product.price.currency.label,
+          symbol: product.price.currency.symbol,
+        },
+        amount: product.price.amount,
+      },
       attributes: (product.attributes ?? []).map((attr) => ({
         id: attr.name,
         name: attr.name,
@@ -61,9 +58,9 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({ data, name }) => {
 
   return (
     <div>
-      <h1 className="mb-28 text-5xl">{name}</h1>
+      <h1 className="mb-28 text-5xl uppercase">{name}</h1>
       <div className="grid grid-cols-3 gap-10">
-        {data.map((product) => (
+        {products.map((product) => (
           <div
             key={product.id}
             className="group relative cursor-pointer bg-white p-4 transition-transform duration-300 hover:scale-[1.03] hover:shadow-custom"
@@ -94,9 +91,9 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({ data, name }) => {
               {product.inStock && (
                 <div className="absolute bottom-6 right-6 opacity-0 transition duration-300 group-hover:opacity-100">
                   <div
-                    className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-primary"
+                    className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-green"
                     onClick={(e) => {
-                      e.stopPropagation(); // Prevent card click
+                      e.stopPropagation();
                       handleAddToCart(product);
                     }}
                   >
@@ -107,18 +104,11 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({ data, name }) => {
             </div>
 
             <p className="text-lg font-extralight">{product.name}</p>
-            {(Array.isArray(product.prices) ? product.prices : []).map(
-              (price) => (
-                <p
-                  key={price.currency.label}
-                  className={`text-lg ${
-                    !product.inStock && "text-textSecondary"
-                  }`}
-                >
-                  {price.currency.symbol} {price.amount}
-                </p>
-              ),
-            )}
+            <p
+              className={`text-lg ${!product.inStock && "text-textSecondary"}`}
+            >
+              {product.price.currency.symbol} {product.price.amount}
+            </p>
           </div>
         ))}
       </div>

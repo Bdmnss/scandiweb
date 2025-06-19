@@ -9,9 +9,9 @@ class Attribute extends Model
     public static function getAttributesByProductId(string $productId): array
     {
         $results = (new static())->db->query(
-            'SELECT 
+            'SELECT
                 a.id as attribute_id, a.name, a.type, pa.displayValue, pa.value, pa.id as item_id
-            FROM 
+            FROM
                 product_attributes pa
             INNER JOIN
                 attributes a ON pa.attribute_id = a.id
@@ -20,23 +20,27 @@ class Attribute extends Model
             ['productId' => $productId]
         )->get();
 
-        $grouped = [];
+        $attributes = [];
+
         foreach ($results as $row) {
             $attrId = $row['attribute_id'];
-            if (!isset($grouped[$attrId])) {
-                $grouped[$attrId] = [
+
+            if (!isset($attributes[$attrId])) {
+                $attributes[$attrId] = [
                     'id' => $attrId,
                     'name' => $row['name'],
                     'type' => $row['type'],
                     'items' => [],
                 ];
             }
-            $grouped[$attrId]['items'][] = [
+
+            $attributes[$attrId]['items'][] = [
                 'id' => $row['item_id'],
                 'displayValue' => $row['displayValue'],
                 'value' => $row['value'],
             ];
         }
-        return array_values($grouped);
+
+        return $attributes;
     }
 }
