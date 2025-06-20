@@ -4,6 +4,8 @@ import { useCartStore } from "../store/cartStore";
 import { toKebabCase } from "../utils/stringUtils";
 import type { CartItemAttribute } from "./ProductDetails";
 import type { Product } from "../types";
+import { twMerge } from "tailwind-merge";
+
 interface ProductsGridProps {
   products: Product[];
   name: string;
@@ -77,9 +79,10 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({ products, name }) => {
                     : "/placeholder.jpg"
                 }
                 alt="Main Image"
-                className={`h-[330px] w-full object-cover ${
-                  !product.inStock && "opacity-50"
-                }`}
+                className={twMerge(
+                  "h-[330px] w-full object-cover",
+                  !product.inStock && "opacity-50",
+                )}
               />
               {!product.inStock && (
                 <div className="absolute inset-0 flex items-center justify-center">
@@ -105,7 +108,10 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({ products, name }) => {
 
             <p className="text-lg font-extralight">{product.name}</p>
             <p
-              className={`text-lg ${!product.inStock && "text-textSecondary"}`}
+              className={twMerge(
+                "text-lg",
+                !product.inStock && "text-textSecondary",
+              )}
             >
               {product.price.currency.symbol} {product.price.amount}
             </p>

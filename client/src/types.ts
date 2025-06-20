@@ -1,3 +1,5 @@
+import type { CartItemAttribute } from "./Components/ProductDetails";
+
 interface ResolverResponse {
   __typename: string;
 }
@@ -56,3 +58,13 @@ export interface ProductsResponse {
 export interface ProductResponse {
   product: Product;
 }
+
+export interface AddOrderResponse {
+  createOrder: string;
+}
+
+export type CartItem = {
+  id: string;
+  quantity: number;
+  selectedAttributes: CartItemAttribute[];
+};

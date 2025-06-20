@@ -1,5 +1,7 @@
 import React, { useState, useCallback } from "react";
 import type { Product } from "../types";
+import { twMerge } from "tailwind-merge";
+import { twJoin } from "tailwind-merge";
 
 interface ProductGalleryProps {
   product: Product;
@@ -43,7 +45,10 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ product }) => {
         {imageUrls.map((imageUrl, index) => (
           <li
             key={index}
-            className="w-28 cursor-pointer"
+            className={twMerge(
+              "w-28 cursor-pointer",
+              twJoin(activeImage === imageUrl && "ring-2 ring-green"),
+            )}
             onClick={() => selectImage(imageUrl)}
           >
             <img src={imageUrl} alt={product.name} className="w-full" />
@@ -57,21 +62,28 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ product }) => {
           <img
             src={activeImage}
             alt={product.name}
-            className={`h-[600px] w-full object-contain transition-opacity duration-300 ${
-              fading ? "opacity-0" : "opacity-100"
-            }`}
+            className={twMerge(
+              "h-[600px] w-full object-contain transition-opacity duration-300",
+              fading ? "opacity-0" : "opacity-100",
+            )}
           />
 
           {imageUrls.length > 1 && (
             <div>
               <button
-                className="absolute left-0 top-1/2 flex size-8 -translate-y-1/2 transform items-center justify-center bg-arrowBackground text-white transition-colors duration-300 hover:bg-black"
+                className={twMerge(
+                  "absolute left-0 top-1/2 flex size-8 -translate-y-1/2 transform items-center justify-center bg-arrowBackground text-white transition-colors duration-300",
+                  "hover:bg-black",
+                )}
                 onClick={handlePrev}
               >
                 <img src="/arrow.svg" alt="Previous" className="rotate-180" />
               </button>
               <button
-                className="absolute right-0 top-1/2 flex size-8 -translate-y-1/2 transform items-center justify-center bg-arrowBackground p-2 text-white transition-colors duration-300 hover:bg-black"
+                className={twMerge(
+                  "absolute right-0 top-1/2 flex size-8 -translate-y-1/2 transform items-center justify-center bg-arrowBackground p-2 text-white transition-colors duration-300",
+                  "hover:bg-black",
+                )}
                 onClick={handleNext}
               >
                 <img src="/arrow.svg" alt="Next" />

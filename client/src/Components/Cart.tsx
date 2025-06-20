@@ -2,14 +2,14 @@ import React from "react";
 import { useCartStore } from "../store/cartStore";
 import { useAddOrder } from "../lib/graphql/hooks";
 import { toKebabCase } from "../utils/stringUtils";
+import { twMerge } from "tailwind-merge";
+import { twJoin } from "tailwind-merge";
 
 const Cart: React.FC = () => {
   const items = useCartStore((state) => state.items);
   const increment = useCartStore((state) => state.increment);
   const decrement = useCartStore((state) => state.decrement);
   const { addOrder, loading } = useAddOrder();
-
-  console.log("Cart items:", items);
 
   const handlePlaceOrder = async () => {
     if (!items.length) return;
@@ -60,13 +60,19 @@ const Cart: React.FC = () => {
                           return (
                             <div key={item.value}>
                               <button
-                                className={`duration-300 ${
+                                className={twMerge(
+                                  "duration-300",
                                   attribute.type === "text" &&
-                                  `border border-black px-2 py-1 ${isSelected ? "bg-black text-white" : ""}`
-                                } ${
+                                    twJoin(
+                                      "border border-black px-2 py-1",
+                                      isSelected && "bg-black text-white",
+                                    ),
                                   attribute.type === "swatch" &&
-                                  `${isSelected && "border-green ring-green ring-2"}`
-                                }`}
+                                    twJoin(
+                                      isSelected &&
+                                        "border-green ring-2 ring-green",
+                                    ),
+                                )}
                                 disabled
                                 tabIndex={-1}
                                 data-testid={
@@ -146,9 +152,9 @@ const Cart: React.FC = () => {
               .toFixed(2)}
           </p>
         </div>
-        <div className={`w-full ${items.length > 1 && "pb-8"}`}>
+        <div className={twMerge("w-full", items.length > 1 && "pb-8")}>
           <button
-            className="bg-green w-full py-3 text-white disabled:opacity-50"
+            className="w-full bg-green py-3 text-white disabled:opacity-50"
             disabled={items.length === 0 || loading}
             onClick={handlePlaceOrder}
           >

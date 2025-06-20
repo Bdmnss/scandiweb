@@ -4,6 +4,8 @@ import Overlay from "./Overlay";
 import Cart from "./Cart";
 import { useCategories } from "../lib/graphql/hooks";
 import { useCartStore } from "../store/cartStore";
+import { twMerge } from "tailwind-merge";
+import { twJoin } from "tailwind-merge";
 
 const Header = () => {
   const location = useLocation();
@@ -42,11 +44,14 @@ const Header = () => {
             <Link
               key={tab}
               to={tab === "ALL" ? "/" : `/${category.name.toLowerCase()}`}
-              className={`relative cursor-pointer border-b-2 px-4 pb-6 transition-all duration-200 ${
-                isActive
-                  ? "border-green text-green font-semibold"
-                  : "border-transparent"
-              }`}
+              className={twMerge(
+                "relative cursor-pointer border-b-2 px-4 pb-6 transition-all duration-200",
+                twJoin(
+                  isActive
+                    ? "border-green font-semibold text-green"
+                    : "border-transparent",
+                ),
+              )}
               onClick={() => handleTabClick(tab)}
               data-testid={isActive ? "active-category-link" : "category-link"}
             >

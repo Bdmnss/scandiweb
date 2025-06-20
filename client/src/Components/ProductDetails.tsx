@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import parse from "html-react-parser";
 import { useCartStore, type AttributeItem } from "../store/cartStore";
 import { toKebabCase } from "../utils/stringUtils";
+import { twMerge } from "tailwind-merge";
+import { twJoin } from "tailwind-merge";
 
 export interface CartItemAttribute extends AttributeItem {
   attributeId: string;
@@ -96,21 +98,23 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
                 <div key={item.value}>
                   <button
                     type="button"
-                    className={`h-11 w-16 duration-300 ${
+                    className={twMerge(
+                      "h-11 w-16 duration-300",
                       attribute.type === "text" &&
-                      `border transition-colors ${
-                        isSelected
-                          ? "border-black bg-black text-white"
-                          : "border-black hover:bg-black hover:text-white"
-                      }`
-                    } ${
+                        twJoin(
+                          "border transition-colors",
+                          isSelected
+                            ? "border-black bg-black text-white"
+                            : "border-black hover:bg-black hover:text-white",
+                        ),
                       attribute.type === "swatch" &&
-                      `border ${
-                        isSelected
-                          ? "border-green ring-green ring-2"
-                          : "ring-green hover:border-green hover:ring-2"
-                      }`
-                    } `}
+                        twJoin(
+                          "border",
+                          isSelected
+                            ? "border-green ring-2 ring-green"
+                            : "ring-green hover:border-green hover:ring-2",
+                        ),
+                    )}
                     style={
                       attribute.type === "swatch"
                         ? { backgroundColor: item.value }
@@ -147,7 +151,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
 
       <button
         disabled={!product.inStock || !allSelected}
-        className="bg-green h-14 w-full font-semibold text-white disabled:opacity-50"
+        className="h-14 w-full bg-green font-semibold text-white disabled:opacity-50"
         onClick={handleAddToCart}
         data-testid="add-to-cart"
       >

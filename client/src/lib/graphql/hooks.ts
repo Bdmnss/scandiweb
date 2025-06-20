@@ -6,11 +6,12 @@ import {
   CreateOrder,
 } from "./queries";
 import { useCartStore as useCartStoreBase } from "../../store/cartStore";
-import type { CartItemAttribute } from "../../Components/ProductDetails";
 import type {
   CategoriesResponse,
   ProductResponse,
   ProductsResponse,
+  CartItem,
+  AddOrderResponse,
 } from "../../types";
 
 export function useCategories() {
@@ -38,14 +39,9 @@ export function useProduct(id: string) {
 export const useCartStore = useCartStoreBase;
 
 export function useAddOrder() {
-  const [createOrder, { data, loading, error }] = useMutation(CreateOrder);
+  const [createOrder, { data, loading, error }] =
+    useMutation<AddOrderResponse>(CreateOrder);
   const clearCart = useCartStoreBase((state) => state.clearCart);
-
-  type CartItem = {
-    id: string;
-    quantity: number;
-    selectedAttributes: CartItemAttribute[];
-  };
 
   const addOrder = async (items: CartItem[]) => {
     const itemsForMutation = items.map((item) => ({
