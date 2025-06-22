@@ -17,7 +17,7 @@ import type {
 export function useCategories() {
   const { data, loading, error } =
     useQuery<CategoriesResponse>(GetAllCategories);
-  return { data, loading, error: Boolean(error) };
+  return { data, loading, error };
 }
 
 export function useProducts(category?: string) {
@@ -25,7 +25,7 @@ export function useProducts(category?: string) {
     variables: category ? { category } : {},
     skip: category === undefined,
   });
-  return { data, loading, error: Boolean(error) };
+  return { data, loading, error };
 }
 
 export function useProduct(id: string) {
@@ -33,7 +33,7 @@ export function useProduct(id: string) {
     variables: { id },
     skip: !id,
   });
-  return { data, loading, error: Boolean(error) };
+  return { data, loading, error };
 }
 
 export const useCartStore = useCartStoreBase;

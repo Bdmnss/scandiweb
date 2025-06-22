@@ -3,6 +3,7 @@ import Header from "./Components/Header";
 import Products from "./Pages/Products";
 import Product from "./Pages/Product";
 import CustomError from "./Components/CustomError";
+import { Toaster } from "react-hot-toast";
 
 function Layout() {
   return (
@@ -38,7 +39,12 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <>
+      <Toaster position="top-right" />
+      <RouterProvider router={router} />
+    </>
+  );
 }
 
 export default App;

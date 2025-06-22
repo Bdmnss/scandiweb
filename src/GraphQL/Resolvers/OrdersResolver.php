@@ -17,9 +17,8 @@ class OrdersResolver
 
         try {
             $orderResult = Order::create($db);
-
-            if (!$orderResult['success']) {
-                abort(500, $orderResult['error']);
+            if (!isset($orderResult) || !$orderResult['success']) {
+                abort(500, "Order creation failed. Please try again later.");
             }
 
             $orderId = $orderResult['orderId'];
@@ -34,14 +33,14 @@ class OrdersResolver
                 $insertResult = OrderItem::insertItem($db, $orderId, $productDetails);
 
                 if (!$insertResult['success']) {
-                    abort(500, $insertResult['error']);
+                    abort(500, "Failed to add product '{$productDetails['productName']}' to order: {$insertResult['error']}");
                 }
             }
 
             $updateResult = Order::update($db, $orderId, $totalAmount, $currency);
 
             if (!$updateResult['success']) {
-                abort(500, $updateResult['error']);
+                abort(500, "Failed to update order total: {$updateResult['error']}");
             }
 
             $db->commit();
@@ -49,7 +48,7 @@ class OrdersResolver
             return "Order placed successfully! Order ID: $orderId, $totalAmount $currency will be charged from your card.";
         } catch (Exception $e) {
             $db->rollback();
-            abort(500, $e->getMessage());
+            abort(500, "Unexpected error while creating order: " . $e->getMessage());
         }
     }
 
@@ -58,11 +57,19 @@ class OrdersResolver
         $product = Product::getOne($item['productId']);
 
         if (!$product) {
-            abort(500, "Product with ID '{$item['productId']}' does not exist");
+            abort(400, "Product with ID '{$item['productId']}' does not exist.");
         }
 
-        if ($product['inStock'] === 0) {
-            abort(500, "Product with ID '{$item['productId']}' is out of stock");
+        if (!$product['inStock']) {
+            abort(400, "Product '{$product['name']}' is out of stock.");
+        }
+
+        if (
+            !isset($item['quantity']) ||
+            !is_numeric($item['quantity']) ||
+            $item['quantity'] < 1
+        ) {
+            abort(400, "Invalid quantity for product '{$product['name']}'.");
         }
 
         $productPrice = Product::getPrice($product['id']);

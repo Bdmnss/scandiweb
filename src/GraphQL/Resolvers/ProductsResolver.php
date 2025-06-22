@@ -14,11 +14,23 @@ class ProductsResolver
             $filters['category'] = $category;
         }
 
-        return Product::getAll($filters);
+        $products = Product::getAll($filters);
+
+        if (empty($products)) {
+            abort(404, "No products found in the selected category.");
+        }
+
+        return $products;
     }
 
     public static function getOne(string $id): ?array
     {
-        return Product::getOne($id);
+        $product = Product::getOne($id);
+
+        if (empty($product)) {
+            abort(404, "Product with ID '$id' not found.");
+        }
+
+        return $product;
     }
 }

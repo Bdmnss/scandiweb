@@ -5,6 +5,7 @@ import Loader from "../Components/Loader";
 import { useEffect } from "react";
 import CustomError from "../Components/CustomError";
 import { useProduct } from "../lib/graphql/hooks";
+import toast from "react-hot-toast";
 
 const Product = () => {
   const { id } = useParams<{ id: string }>();
@@ -16,12 +17,30 @@ const Product = () => {
     window.scrollTo(0, 0);
   }, []);
 
+  useEffect(() => {
+    if (error) {
+      const backendMessage =
+        error.graphQLErrors?.[0]?.message ||
+        // @ts-expect-error: custom backend error property
+        error.networkError?.result?.error ||
+        error.message;
+
+      toast.error(backendMessage);
+    }
+  }, [error]);
+
   if (loading) {
     return <Loader />;
   }
 
   if (error) {
-    return <CustomError message={(error as unknown as Error).message} />;
+    const backendMessage =
+      error.graphQLErrors?.[0]?.message ||
+      // @ts-expect-error: custom backend error property
+      error.networkError?.result?.error ||
+      error.message;
+
+    return <CustomError message={backendMessage} />;
   }
 
   if (!product) {

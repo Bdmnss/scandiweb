@@ -1,20 +1,39 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useCartStore } from "../store/cartStore";
 import { useAddOrder } from "../lib/graphql/hooks";
 import { toKebabCase } from "../utils/stringUtils";
 import { twMerge } from "tailwind-merge";
 import { twJoin } from "tailwind-merge";
+import toast from "react-hot-toast";
 
 const Cart: React.FC = () => {
   const items = useCartStore((state) => state.items);
   const increment = useCartStore((state) => state.increment);
   const decrement = useCartStore((state) => state.decrement);
-  const { addOrder, loading } = useAddOrder();
+  const { addOrder, loading, data, error } = useAddOrder();
 
   const handlePlaceOrder = async () => {
     if (!items.length) return;
     await addOrder(items);
   };
+
+  useEffect(() => {
+    if (data && data.createOrder) {
+      toast.success(data.createOrder);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    if (error) {
+      const backendMessage =
+        error.graphQLErrors?.[0]?.message ||
+        // @ts-expect-error: custom backend error property
+        error.networkError?.result?.error ||
+        error.message;
+
+      toast.error(backendMessage);
+    }
+  }, [error]);
 
   return (
     <div
