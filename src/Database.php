@@ -52,7 +52,7 @@ class Database
         $result = $this->statement->fetch();
 
         if (!$result) {
-            abort();
+            return null;
         }
 
         return $result;
