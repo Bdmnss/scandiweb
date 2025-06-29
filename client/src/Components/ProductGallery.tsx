@@ -1,7 +1,6 @@
 import React, { useState, useCallback } from "react";
 import type { Product } from "../types";
 import { twMerge } from "tailwind-merge";
-import { twJoin } from "tailwind-merge";
 
 interface ProductGalleryProps {
   product: Product;
@@ -47,7 +46,7 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ product }) => {
             key={index}
             className={twMerge(
               "w-28 cursor-pointer",
-              twJoin(activeImage === imageUrl && "ring-2 ring-green"),
+              activeImage === imageUrl && "ring-2 ring-green",
             )}
             onClick={() => selectImage(imageUrl)}
           >

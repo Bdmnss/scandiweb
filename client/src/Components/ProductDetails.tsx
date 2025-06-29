@@ -3,7 +3,6 @@ import parse from "html-react-parser";
 import { useCartStore, type AttributeItem } from "../store/cartStore";
 import { toKebabCase } from "../utils/stringUtils";
 import { twMerge } from "tailwind-merge";
-import { twJoin } from "tailwind-merge";
 
 export interface CartItemAttribute extends AttributeItem {
   attributeId: string;
@@ -101,19 +100,13 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
                     className={twMerge(
                       "h-11 w-16 duration-300",
                       attribute.type === "text" &&
-                        twJoin(
-                          "border transition-colors",
-                          isSelected
-                            ? "border-black bg-black text-white"
-                            : "border-black hover:bg-black hover:text-white",
-                        ),
+                        (isSelected
+                          ? "border border-black bg-black text-white transition-colors"
+                          : "border border-black transition-colors hover:bg-black hover:text-white"),
                       attribute.type === "swatch" &&
-                        twJoin(
-                          "border",
-                          isSelected
-                            ? "border-green ring-2 ring-green"
-                            : "ring-green hover:border-green hover:ring-2",
-                        ),
+                        (isSelected
+                          ? "border border-green ring-2 ring-green"
+                          : "border ring-green hover:border-green hover:ring-2"),
                     )}
                     style={
                       attribute.type === "swatch"

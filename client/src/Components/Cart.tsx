@@ -3,7 +3,6 @@ import { useCartStore } from "../store/cartStore";
 import { useAddOrder } from "../lib/graphql/hooks";
 import { toKebabCase } from "../utils/stringUtils";
 import { twMerge } from "tailwind-merge";
-import { twJoin } from "tailwind-merge";
 import toast from "react-hot-toast";
 
 const Cart: React.FC = () => {
@@ -81,16 +80,13 @@ const Cart: React.FC = () => {
                               <button
                                 className={twMerge(
                                   "duration-300",
-                                  attribute.type === "text" &&
-                                    twJoin(
-                                      "border border-black px-2 py-1",
-                                      isSelected && "bg-black text-white",
-                                    ),
+                                  attribute.type === "text" && [
+                                    "border border-black px-2 py-1",
+                                    isSelected && "bg-black text-white",
+                                  ],
                                   attribute.type === "swatch" &&
-                                    twJoin(
-                                      isSelected &&
-                                        "border-green ring-2 ring-green",
-                                    ),
+                                    isSelected &&
+                                    "border-green ring-2 ring-green",
                                 )}
                                 disabled
                                 tabIndex={-1}
