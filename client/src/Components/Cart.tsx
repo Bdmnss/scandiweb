@@ -50,10 +50,10 @@ const Cart: React.FC = () => {
         </p>
 
         <div className="flex flex-col gap-10">
-          {items.map((product) => (
+          {items.map((product, index) => (
             <div
               className="flex w-full justify-between border-b border-gray-200 pb-4 last:mb-0 last:border-b-0 last:pb-0"
-              key={product.id}
+              key={index}
             >
               <div className="flex flex-col gap-3">
                 <p className="text-lg font-light">{product.name}</p>
