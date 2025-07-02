@@ -42,11 +42,10 @@ const Header = () => {
           return (
             <Link
               key={tab}
-              to={tab === "ALL" ? "/" : `/${category.name.toLowerCase()}`}
+              to={`/${category.name.toLowerCase()}`}
               className={twMerge(
-                "relative cursor-pointer border-b-2 px-4 pb-6 transition-all duration-200",
+                "relative cursor-pointer border-b-2 border-transparent px-4 pb-6 transition-all duration-200",
                 isActive && "border-green font-semibold text-green",
-                !isActive && "border-transparent",
               )}
               onClick={() => handleTabClick(tab)}
               data-testid={isActive ? "active-category-link" : "category-link"}

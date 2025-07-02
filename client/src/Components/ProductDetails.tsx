@@ -1,81 +1,45 @@
 import React, { useState } from "react";
 import parse from "html-react-parser";
-import { useCartStore, type AttributeItem } from "../store/cartStore";
+import { useCartStore } from "../store/cartStore";
 import { toKebabCase } from "../utils/stringUtils";
 import { twMerge } from "tailwind-merge";
+import type { Product } from "../types";
 
-export interface CartItemAttribute extends AttributeItem {
-  attributeId: string;
+export interface SelectedAttribute {
+  [type: string]: string;
 }
 
 interface ProductDetailsProps {
-  product: {
-    id: string;
-    brand: string;
-    name: string;
-    attributes: Array<{
-      id: string;
-      name: string;
-      type: string;
-      items: Array<AttributeItem>;
-    }>;
-    price: {
-      currency: { label: string; symbol: string };
-      amount: number;
-    };
-    inStock: boolean;
-    description: string;
-    images?: { url: string }[];
-  };
+  product: Product;
 }
 
 const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
-  const [selected, setSelected] = useState<Record<string, CartItemAttribute>>(
-    {},
-  );
+  const [selected, setSelected] = useState<SelectedAttribute>({});
   const addToCart = useCartStore((state) => state.addToCart);
   const setIsCartOpen = useCartStore((state) => state.setIsCartOpen);
   const setIsOverlayOpen = useCartStore((state) => state.setIsOverlayOpen);
 
   const allSelected =
     product.attributes.length === 0 ||
-    product.attributes.every((attr) => selected[attr.name]);
+    product.attributes.every((attr) => selected[attr.id]);
 
-  const handleSelect = (attrName: string, value: CartItemAttribute) => {
-    setSelected((prev) => ({ ...prev, [attrName]: value }));
+  const handleSelect = (attrId: string, value: string) => {
+    setSelected((prev) => ({ ...prev, [attrId]: value }));
   };
 
   const handleAddToCart = () => {
     if (!allSelected) return;
+
     addToCart({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      attributes: product.attributes.map((attr) => ({
-        id: attr.id ?? attr.name,
-        name: attr.name,
-        type: attr.type,
-        items: attr.items.map((item) => ({
-          id: item.id ?? item.value,
-          value: item.value,
-          attributeId: attr.id,
-          displayValue: item.displayValue ?? item.value,
-        })),
-      })),
-      selectedAttributes: Object.values(selected),
-      images: product.images || [],
-      ...(product.brand && { brand: product.brand }),
-      ...(product.description && { description: product.description }),
-      ...(typeof product.inStock !== "undefined" && {
-        inStock: product.inStock,
-      }),
+      ...product,
+      selectedAttributes: selected,
     });
     setIsCartOpen(true);
     setIsOverlayOpen(true);
   };
 
   return (
-    <div className="flex w-1/4 flex-col gap-8">
+    <div className="flex w-2/5 flex-col gap-8">
       <div className="flex flex-col gap-4">
         <h1 className="text-3xl font-semibold">{product.brand}</h1>
         <h2 className="text-3xl">{product.name}</h2>
@@ -91,34 +55,30 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
           <div className="flex gap-3">
             {/* eslint-disable-next-line @typescript-eslint/no-unused-vars */}
             {attribute.items.map(({ __typename, ...item }) => {
-              const isSelected = selected[attribute.name]?.id === item.id;
+              const isSelected = selected[attribute.id] === item.id;
 
               return (
                 <div key={item.value}>
                   <button
                     type="button"
+                    data-testid={`product-attribute-${toKebabCase(attribute.name)}`}
                     className={twMerge(
-                      "h-11 w-16 duration-300",
-                      attribute.type === "text" &&
-                        (isSelected
-                          ? "border border-black bg-black text-white transition-colors"
-                          : "border border-black transition-colors hover:bg-black hover:text-white"),
-                      attribute.type === "swatch" &&
-                        (isSelected
-                          ? "border border-green ring-2 ring-green"
-                          : "border ring-green hover:border-green hover:ring-2"),
+                      "h-11 w-16 border duration-300",
+                      attribute.type === "text" && [
+                        "border-black transition-colors hover:bg-black hover:text-white",
+                        isSelected && "bg-black text-white",
+                      ],
+                      attribute.type === "swatch" && [
+                        "ring-green hover:border-green hover:ring-2",
+                        isSelected && "border-green ring-2 ring-green",
+                      ],
                     )}
                     style={
                       attribute.type === "swatch"
                         ? { backgroundColor: item.value }
                         : {}
                     }
-                    onClick={() =>
-                      handleSelect(attribute.name, {
-                        ...item,
-                        attributeId: attribute.id,
-                      })
-                    }
+                    onClick={() => handleSelect(attribute.id, item.id)}
                   >
                     {attribute.type === "text" && (
                       <div className="flex size-full items-center justify-center">

@@ -2,18 +2,20 @@ import React, { useEffect } from "react";
 import { useCartStore } from "../store/cartStore";
 import { useAddOrder } from "../lib/graphql/hooks";
 import { toKebabCase } from "../utils/stringUtils";
-import { twMerge } from "tailwind-merge";
+import { twJoin, twMerge } from "tailwind-merge";
 import toast from "react-hot-toast";
 
 const Cart: React.FC = () => {
-  const items = useCartStore((state) => state.items);
+  const { items, totalItems, getCartItemsForOrder } = useCartStore(
+    (state) => state,
+  );
   const increment = useCartStore((state) => state.increment);
   const decrement = useCartStore((state) => state.decrement);
   const { addOrder, loading, data, error } = useAddOrder();
 
   const handlePlaceOrder = async () => {
     if (!items.length) return;
-    await addOrder(items);
+    await addOrder(getCartItemsForOrder());
   };
 
   useEffect(() => {
@@ -43,15 +45,15 @@ const Cart: React.FC = () => {
         <p className="font-bold">
           My Bag,{" "}
           <span className="font-medium">
-            {items.reduce((acc, item) => acc + item.quantity, 0)} items
+            {totalItems} {totalItems === 1 ? "Item" : "Items"}
           </span>
         </p>
 
         <div className="flex flex-col gap-10">
-          {items.map((product, idx) => (
+          {items.map((product) => (
             <div
               className="flex w-full justify-between border-b border-gray-200 pb-4 last:mb-0 last:border-b-0 last:pb-0"
-              key={product.id + idx}
+              key={product.id}
             >
               <div className="flex flex-col gap-3">
                 <p className="text-lg font-light">{product.name}</p>
@@ -66,50 +68,47 @@ const Cart: React.FC = () => {
                         attribute.name,
                       )}`}
                     >
-                      <h3 className="text-sm">{attribute.name}:</h3>
+                      <p className="mb-2 text-sm capitalize">
+                        {attribute.name}:
+                      </p>
                       <div className="flex gap-3">
                         {attribute.items.map((item) => {
-                          const selectedItem = product.selectedAttributes.find(
-                            (selectedItem) => selectedItem.id === item.id,
-                          );
-                          const isSelected = selectedItem?.value === item.value;
+                          const isSelected =
+                            product.selectedAttributes[attribute.id] ===
+                            item.id;
                           const attrKebab = toKebabCase(attribute.name);
 
                           return (
-                            <div key={item.value}>
-                              <button
-                                className={twMerge(
-                                  "duration-300",
-                                  attribute.type === "text" && [
-                                    "border border-black px-2 py-1",
-                                    isSelected && "bg-black text-white",
-                                  ],
-                                  attribute.type === "swatch" &&
-                                    isSelected &&
-                                    "border-green ring-2 ring-green",
-                                )}
-                                disabled
-                                tabIndex={-1}
-                                data-testid={
-                                  isSelected
-                                    ? `cart-item-attribute-${attrKebab}-${attrKebab}-selected`
-                                    : `cart-item-attribute-${attrKebab}-${attrKebab}`
-                                }
-                              >
-                                {attribute.type === "swatch" && (
-                                  <div
-                                    className="h-6 w-6"
-                                    style={{
-                                      backgroundColor: item.value,
-                                    }}
-                                  ></div>
-                                )}
-                                {attribute.type === "text" && (
-                                  <div className="flex size-full items-center justify-center">
-                                    {item.value}
-                                  </div>
-                                )}
-                              </button>
+                            <div
+                              key={item.value}
+                              className={twMerge(
+                                attribute.type === "text" && [
+                                  "border border-black px-2 py-1",
+                                  isSelected && "bg-black text-white",
+                                ],
+                                attribute.type === "swatch" &&
+                                  isSelected &&
+                                  "border-green ring-2 ring-green",
+                              )}
+                              data-testid={
+                                isSelected
+                                  ? `cart-item-attribute-${attrKebab}-${attrKebab}-selected`
+                                  : `cart-item-attribute-${attrKebab}-${attrKebab}`
+                              }
+                            >
+                              {attribute.type === "swatch" && (
+                                <div
+                                  className="h-6 w-6"
+                                  style={{
+                                    backgroundColor: item.value,
+                                  }}
+                                ></div>
+                              )}
+                              {attribute.type === "text" && (
+                                <div className="flex size-full items-center justify-center">
+                                  {item.value}
+                                </div>
+                              )}
                             </div>
                           );
                         })}
@@ -123,7 +122,9 @@ const Cart: React.FC = () => {
                 <div className="absolute -left-9 flex h-full flex-col items-center justify-between">
                   <button
                     className="flex size-6 items-center justify-center border border-black text-2xl transition-colors hover:bg-black hover:text-white"
-                    onClick={() => increment(idx)}
+                    onClick={() =>
+                      increment(product.id, product.selectedAttributes)
+                    }
                     data-testid="cart-item-amount-increase"
                   >
                     +
@@ -131,7 +132,9 @@ const Cart: React.FC = () => {
                   <p data-testid="cart-item-amount">{product.quantity}</p>
                   <button
                     className="flex size-6 items-center justify-center border border-black text-2xl transition-colors hover:bg-black hover:text-white"
-                    onClick={() => decrement(idx)}
+                    onClick={() =>
+                      decrement(product.id, product.selectedAttributes)
+                    }
                     data-testid="cart-item-amount-decrease"
                   >
                     -
@@ -167,7 +170,7 @@ const Cart: React.FC = () => {
               .toFixed(2)}
           </p>
         </div>
-        <div className={twMerge("w-full", items.length > 1 && "pb-8")}>
+        <div className={twJoin("w-full", items.length > 1 && "pb-8")}>
           <button
             className="w-full bg-green py-3 text-white disabled:opacity-50"
             disabled={items.length === 0 || loading}

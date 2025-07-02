@@ -27,7 +27,7 @@ class Attribute extends Model
 
             if (!isset($attributes[$attrId])) {
                 $attributes[$attrId] = [
-                    'id' => $attrId,
+                    'id' => $productId . '-' . $attrId,
                     'name' => $row['name'],
                     'type' => $row['type'],
                     'items' => [],

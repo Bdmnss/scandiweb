@@ -1,4 +1,4 @@
-import type { CartItemAttribute } from "./Components/ProductDetails";
+import type { SelectedAttribute } from "./Components/ProductDetails";
 
 interface ResolverResponse {
   __typename: string;
@@ -66,5 +66,5 @@ export interface AddOrderResponse {
 export type CartItem = {
   id: string;
   quantity: number;
-  selectedAttributes: CartItemAttribute[];
+  selectedAttributes: SelectedAttribute[];
 };

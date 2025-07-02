@@ -1,4 +1,9 @@
-import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Outlet,
+  Navigate,
+} from "react-router-dom";
 import Header from "./Components/Header";
 import Products from "./Pages/Products";
 import Product from "./Pages/Product";
@@ -25,6 +30,10 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <Products />,
+      },
+      {
+        path: "/all",
+        element: <Navigate to="/" />,
       },
       {
         path: "/:category",

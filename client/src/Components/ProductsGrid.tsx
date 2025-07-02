@@ -1,10 +1,10 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import { useCartStore } from "../store/cartStore";
 import { toKebabCase } from "../utils/stringUtils";
-import type { CartItemAttribute } from "./ProductDetails";
+import type { SelectedAttribute } from "./ProductDetails";
 import type { Product } from "../types";
-import { twMerge } from "tailwind-merge";
+import { twJoin } from "tailwind-merge";
+import { Link } from "react-router-dom";
 
 interface ProductsGridProps {
   products: Product[];
@@ -12,48 +12,21 @@ interface ProductsGridProps {
 }
 
 const ProductsGrid: React.FC<ProductsGridProps> = ({ products, name }) => {
-  const navigate = useNavigate();
   const addToCart = useCartStore((state) => state.addToCart);
 
-  const handleProductClick = (id: string) => {
-    navigate(`/products/${id}`);
-  };
-
   const handleAddToCart = (product: Product) => {
-    const selectedAttributes: CartItemAttribute[] = [];
+    const selectedAttributes: SelectedAttribute = {};
+
     if (product.attributes) {
-      product.attributes.forEach(
-        (attr: { name: string; items: { value: string }[] }) => {
-          if (attr.items && attr.items.length > 0) {
-            selectedAttributes.push({
-              attributeId: attr.name,
-              id: attr.items[0].value,
-              value: attr.items[0].value,
-              displayValue: attr.items[0].value,
-            });
-          }
-        },
-      );
+      product.attributes.forEach((attr) => {
+        if (attr.items && attr.items.length > 0) {
+          selectedAttributes[attr.id] = attr.items[0].id;
+        }
+      });
     }
+
     addToCart({
       ...product,
-      price: {
-        currency: {
-          label: product.price.currency.label,
-          symbol: product.price.currency.symbol,
-        },
-        amount: product.price.amount,
-      },
-      attributes: (product.attributes ?? []).map((attr) => ({
-        id: attr.name,
-        name: attr.name,
-        type: "text",
-        items: attr.items.map((item) => ({
-          id: item.value,
-          value: item.value,
-          displayValue: item.value,
-        })),
-      })),
       selectedAttributes,
     });
   };
@@ -63,10 +36,10 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({ products, name }) => {
       <h1 className="mb-28 text-5xl uppercase">{name}</h1>
       <div className="grid grid-cols-3 gap-10">
         {products.map((product) => (
-          <div
+          <Link
             key={product.id}
             className="group relative cursor-pointer bg-white p-4 transition-transform duration-300 hover:scale-[1.03] hover:shadow-custom"
-            onClick={() => handleProductClick(product.id)}
+            to={`/products/${product.id}`}
             data-testid={`product-${toKebabCase(product.name)}`}
           >
             <div className="relative mb-6 h-96 w-full">
@@ -79,8 +52,8 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({ products, name }) => {
                     : "/placeholder.jpg"
                 }
                 alt="Main Image"
-                className={twMerge(
-                  "h-[330px] w-full object-cover",
+                className={twJoin(
+                  "h-[330px] w-full object-contain",
                   !product.inStock && "opacity-50",
                 )}
               />
@@ -96,6 +69,7 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({ products, name }) => {
                   <div
                     className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-green"
                     onClick={(e) => {
+                      e.preventDefault();
                       e.stopPropagation();
                       handleAddToCart(product);
                     }}
@@ -108,14 +82,14 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({ products, name }) => {
 
             <p className="text-lg font-extralight">{product.name}</p>
             <p
-              className={twMerge(
+              className={twJoin(
                 "text-lg",
                 !product.inStock && "text-textSecondary",
               )}
             >
               {product.price.currency.symbol} {product.price.amount}
             </p>
-          </div>
+          </Link>
         ))}
       </div>
     </div>
