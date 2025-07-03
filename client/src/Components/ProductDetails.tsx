@@ -61,7 +61,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
                 <div key={item.value}>
                   <button
                     type="button"
-                    data-testid={`product-attribute-${toKebabCase(attribute.name)}`}
+                    data-testid={`product-attribute-${toKebabCase(attribute.name)}-${item.displayValue}`}
                     className={twMerge(
                       "h-11 w-16 border duration-300",
                       attribute.type === "text" && [
